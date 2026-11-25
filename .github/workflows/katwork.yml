@@ -1,4 +1,4 @@
-# KatWork fork checks (see KATWORK.md). Actions are pinned by commit.
+# KatWork fork checks (see KATWORK.md). Actions are locked by commit in actions.lock.
 name: KatWork
 
 on:
@@ -16,3 +16,19 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - run: bash scripts/check-no-marks.sh --self-test
       - run: bash scripts/check-no-marks.sh
+
+  katwork-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: step-security/dtolnay-rust-toolchain@v1.0.0
+        with:
+          toolchain: 1.97.1
+      - name: The gated crates are not in the KatWork build graphs
+        run: bash scripts/katwork-profile.sh
+      - name: The gate test, with the gate off
+        # The test file compiles only with the gate off: fail if it ran no test (zero tests pass green).
+        run: |
+          set -o pipefail
+          cargo test --locked -p figcraft-engine --no-default-features --test katwork_profile 2>&1 | tee katwork-profile-test.log
+          grep -E 'test result: ok\. [1-9][0-9]* passed' katwork-profile-test.log

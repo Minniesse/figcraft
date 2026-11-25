@@ -173,6 +173,7 @@ fn many_sessions_converge() {
     }
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn collab_diff_shows_the_last_edit() {
     let mut s = Session::with_document(base());

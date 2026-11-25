@@ -5,8 +5,10 @@ use std::sync::{Arc, Mutex};
 
 use serde_json::json;
 
+#[cfg(feature = "collab")]
+use crate::EngineError;
+use crate::Session;
 use crate::invite_links::LinkRegistrar;
-use crate::{EngineError, Session};
 
 #[derive(Default)]
 struct State {
@@ -45,6 +47,7 @@ fn session(installed: bool, registered: bool) -> (Session, Arc<Mutex<State>>) {
     (s, state)
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn without_a_registrar_the_command_is_disabled() {
     let mut s = Session::new();
@@ -89,6 +92,7 @@ fn the_preference_wins_at_startup() {
     assert_eq!(state.lock().unwrap().calls, vec![false], "turned off: this copy's registration is removed");
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn the_command_switches_and_remembers() {
     let (mut s, state) = session(true, false);
@@ -103,6 +107,7 @@ fn the_command_switches_and_remembers() {
     assert_eq!(state.lock().unwrap().calls, vec![false, true]);
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn a_failed_registration_keeps_the_preference() {
     let (mut s, state) = session(true, false);

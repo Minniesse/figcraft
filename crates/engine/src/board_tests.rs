@@ -8,6 +8,7 @@ use figcraft_geom::Point;
 use serde_json::{Value, json};
 
 use crate::board::{STICKY_TEXT_SIZE, route};
+#[cfg(feature = "collab")]
 use crate::collab_live_tests::Room;
 use crate::tools::{PointerEvent, PointerKind, ToolId};
 use crate::{EngineError, Session};
@@ -425,6 +426,7 @@ fn the_sticky_and_connector_tools() {
     assert_eq!((k.from.node(), k.to.node()), (Some(a), Some(b)));
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn boards_sync_in_live_sessions() {
     let mut s = board();
