@@ -1,6 +1,6 @@
 # FigCraft app icon
 
-A **chameleon**: an engraving portrait in profile with a curled tail, in the Crafting Apps'
+A **chameleon**: an engraving portrait in profile with a curled tail, in the Craft apps'
 owl-template framing (full-bleed field, head and body filling the tile, body running off the edges).
 
 ## Palette
@@ -17,7 +17,7 @@ Exactly three colours:
 
 A 512-unit tile (`viewBox="0 0 512 512"`), rounded square with `rx=112`, no border. The macOS
 renders pad it onto Apple's 824/1024 icon grid; Windows and Linux use the tile edge to edge, with
-its rounded corners, like the other Crafting Apps.
+its rounded corners, like the other Craft apps.
 
 ## Provenance
 
