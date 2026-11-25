@@ -1,11 +1,8 @@
 //! Mind maps (#2226): `board.mindMap` and `board.mindMapAdd` make nodes and branches, and the
 //! normalize pass lays a touched map out again from its first node after every edit.
 
-#[cfg(feature = "collab")]
 use figcraft_color::{Color, Paint};
-use figcraft_doc::{BoardItem, Connector, Document, END_GAP, End, NodeId, NodeKind, Side};
-#[cfg(feature = "collab")]
-use figcraft_doc::{LetterSpacing, LineHeight, Routing, StrokeCap};
+use figcraft_doc::{BoardItem, Connector, Document, END_GAP, End, LetterSpacing, LineHeight, NodeId, NodeKind, Routing, Side, StrokeCap};
 use figcraft_geom::{Point, Rect};
 use serde_json::{Value, json};
 
@@ -69,7 +66,6 @@ fn branches(s: &Session) -> Vec<NodeId> {
 }
 
 /// Starter child `i` (`k`, on branch `line`) of the first node: its text, its place and its branch.
-#[cfg(feature = "collab")]
 fn check_child(s: &Session, root: NodeId, (k, line): (NodeId, NodeId), i: usize) {
     let r = bx(s, root);
     let td = text_data(s, k);
@@ -98,7 +94,6 @@ fn check_child(s: &Session, root: NodeId, (k, line): (NodeId, NodeId), i: usize)
     assert!(near(*pts.last().unwrap(), Point::new(b.x0 - END_GAP, b.center().y)), "{pts:?}");
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn a_mind_map_is_a_first_node_with_three_children_on_branches() {
     let mut s = board();
@@ -177,7 +172,6 @@ fn a_childs_child_starts_the_next_column_and_a_sibling_goes_right_after() {
     assert_eq!(kids(s.doc().unwrap(), root), [c0, c1, new, c2]);
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn more_lines_push_the_siblings_apart() {
     let mut s = board();

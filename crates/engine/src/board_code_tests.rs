@@ -15,7 +15,6 @@ use crate::board::{is_code_text, text_of};
 use crate::board_tests::{board, id, node};
 #[cfg(feature = "collab")]
 use crate::collab_live_tests::Room;
-#[cfg(feature = "collab")]
 use crate::tools::{PointerEvent, PointerKind};
 use crate::{EngineError, Session};
 
@@ -38,7 +37,6 @@ fn block(s: &mut Session, p: Value) -> (NodeId, NodeId) {
 }
 
 /// How many visual lines the text lays out in.
-#[cfg(feature = "collab")]
 fn lines(s: &Session, text: NodeId) -> usize {
     let n = node(s, text);
     figcraft_text::layout_node(&n).map_or(0, |(l, _)| l.lines.len())
@@ -48,12 +46,10 @@ fn solid(hex: (u8, u8, u8)) -> Vec<Paint> {
     vec![Paint::solid(Color::from_rgb8_const(hex.0, hex.1, hex.2))]
 }
 
-#[cfg(feature = "collab")]
 fn ten(n: usize) -> String {
     vec!["x"; n].join("\n")
 }
 
-#[cfg(feature = "collab")]
 fn drag(s: &mut Session, from: (f64, f64), to: (f64, f64)) {
     s.pointer(&PointerEvent::at(PointerKind::Down, from.0, from.1, 1.0)).unwrap();
     s.pointer(&PointerEvent::at(PointerKind::Move, (from.0 + to.0) / 2.0, (from.1 + to.1) / 2.0, 1.0)).unwrap();
@@ -119,7 +115,6 @@ fn a_block_without_a_place_is_centred_and_edit_asks_for_typing() {
     assert!(s.ui_requests.iter().any(|q| q.kind == "board.editText" && q.data["id"] == json!(f)));
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn the_height_is_its_lines_24_each_and_never_under_four() {
     let mut s = board();
@@ -137,7 +132,6 @@ fn the_height_is_its_lines_24_each_and_never_under_four() {
     assert_eq!((r.x0, r.y0, r.height()), (100.0, 200.0, 128.0));
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn long_lines_wrap_and_each_visual_line_adds_24() {
     let mut s = board();
@@ -158,7 +152,6 @@ fn long_lines_wrap_and_each_visual_line_adds_24() {
     }
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn only_the_width_is_the_users() {
     let mut s = board();
@@ -197,7 +190,6 @@ fn only_the_width_is_the_users() {
 
 /// A block settled after `how` made it incoherent: still 5 lines tall, 576 wide, hugging, with
 /// its layout, and a second pass changes nothing.
-#[cfg(feature = "collab")]
 fn settled_after(how: impl Fn(&mut Session, NodeId)) {
     let mut s = board();
     let (f, t) = block(&mut s, json!({"x": 0, "y": 0, "text": ten(4)}));
@@ -215,7 +207,6 @@ fn settled_after(how: impl Fn(&mut Session, NodeId)) {
     assert_eq!(again, doc, "a second pass changes nothing");
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn the_pass_keeps_a_blocks_layout_and_width_sizing() {
     settled_after(|s, f| {
@@ -536,7 +527,6 @@ fn a_structured_text_is_refused_and_no_block_is_made() {
     }
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn the_pass_restores_padding_and_the_minimums() {
     let mut s = board();

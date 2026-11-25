@@ -544,6 +544,7 @@ mod tests {
             (&["mcp", "--automation-write-root"], InvalidValue),
             (&["mcp", "stray"], UnknownArgument),
             (&["convert", "a"], MissingRequiredArgument),
+            #[cfg(feature = "plugins")]
             (&["plugin", "publish", "dist"], MissingRequiredArgument),
             (&["commands", "--filter", "--json"], InvalidValue),
         ];
@@ -568,6 +569,7 @@ mod tests {
             &["mcp", "--attach", "notaport", "--help"],
             &["mcp", "--attach", "localhost:notaport", "--help"],
             &["mcp", "--bogus", "-h"],
+            #[cfg(feature = "plugins")]
             &["--no-system-fonts", "plugin", "publish", "--bogus", "--help"],
         ] {
             let e = try_parse(args).err();
@@ -575,8 +577,11 @@ mod tests {
             assert_eq!(e.map(|e| e.exit_code()), Some(0), "{args:?}");
         }
         // The help is the subcommand's, even after a mistake.
-        let help = try_parse(&["plugin", "publish", "--bogus", "--help"]).err().map(|e| e.to_string()).unwrap_or_default();
-        assert!(help.contains("Usage: figcraft-cli plugin publish"), "{help}");
+        #[cfg(feature = "plugins")]
+        {
+            let help = try_parse(&["plugin", "publish", "--bogus", "--help"]).err().map(|e| e.to_string()).unwrap_or_default();
+            assert!(help.contains("Usage: figcraft-cli plugin publish"), "{help}");
+        }
         // After `--`, `-h` is a file name.
         let Command::Info(a) = ok(&["info", "--", "-h"]) else { panic!("info") };
         assert_eq!(a.file, "-h");

@@ -60,8 +60,8 @@ fn completions_name_the_cli_its_subcommands_and_options() -> std::io::Result<()>
             "server",
         ]
         .into_iter()
-        // A build without `plugins` has no `plugin` subcommand.
-        .filter(|w| cfg!(feature = "plugins") || *w != "plugin")
+        // A build without `plugins` has no `plugin` subcommand, nor its `--server`.
+        .filter(|w| cfg!(feature = "plugins") || !["plugin", "server"].contains(w))
         {
             assert!(text.contains(word), "{name} does not contain {word}");
         }
@@ -152,7 +152,8 @@ fn generation_creates_the_output_directory_and_can_run_again() -> std::io::Resul
     fs::write(&page, "old page")?;
     generator::generate(&output)?;
     assert_eq!(fs::read(page)?, first);
-    assert_eq!(fs::read_dir(output)?.count(), 18);
+    // Two man pages fewer without the `plugin` subcommand.
+    assert_eq!(fs::read_dir(output)?.count(), if cfg!(feature = "plugins") { 18 } else { 16 });
     Ok(())
 }
 
