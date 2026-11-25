@@ -72,6 +72,7 @@ pub fn show(s: &mut Session, command: &str, params: &Value) -> Result<()> {
 
 /// Show what `change` does to the document as a live preview (in place of an earlier one), like
 /// [`show`] does with a command's: no undo step, and the next command puts the document back first.
+#[cfg(feature = "plugins")]
 pub(crate) fn show_change(s: &mut Session, cmd: &str, change: impl FnOnce(&mut figcraft_doc::Document) -> Result<()>) -> Result<()> {
     end(s);
     let ds = s.ds_mut()?;

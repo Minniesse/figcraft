@@ -72,6 +72,7 @@ pub use dev::devcompare;
 pub use dev::devinspect;
 pub use dev::tailwind;
 pub use extensions::plugin_directory;
+#[cfg(feature = "plugins")]
 pub use extensions::plugins;
 pub use extensions::widgets;
 pub use selection::rename;
@@ -149,6 +150,7 @@ pub struct Session {
     /// Library files read for the open documents.
     pub libraries: library::Cache,
     /// Plugin modules loaded in this session and the last plugin run.
+    #[cfg(feature = "plugins")]
     pub plugins: plugins::Runtime,
     /// The live sessions (collaboration), one per document at most: status, peers, presence.
     /// [`Session::live`] is the active document's.
@@ -237,6 +239,7 @@ mod booleans_tests;
 #[cfg(test)]
 mod bound_alpha_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod branch_live_tests;
 #[cfg(test)]
 mod branch_tests;
@@ -251,6 +254,7 @@ mod code_connect_tests;
 #[cfg(test)]
 mod collab_ids_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod collab_live_tests;
 #[cfg(test)]
 mod collab_tests;
@@ -259,6 +263,7 @@ mod collab_undo_tests;
 #[cfg(test)]
 mod comment_agent_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod comment_link_tests;
 #[cfg(test)]
 mod comment_mentions_tests;
@@ -423,16 +428,22 @@ mod library_variables_tests;
 #[cfg(test)]
 mod line_endings_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_access_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_docs_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_peer_cap_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_share_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_signal_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_tests;
 #[cfg(test)]
 mod lock_behaviour_tests;
@@ -459,6 +470,7 @@ mod node_set_refusals_tests;
 #[cfg(test)]
 mod normalize_guard_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod online_tests;
 #[cfg(test)]
 mod open_issues_tests;
@@ -509,12 +521,16 @@ mod placed_image_size_tests;
 #[cfg(test)]
 mod playground_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod plugin_data_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod plugin_directory_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod plugin_panels_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 pub(crate) mod plugins_tests;
 #[cfg(test)]
 mod progressive_blur_tests;
@@ -675,14 +691,19 @@ mod vote_history_tests;
 #[cfg(test)]
 mod vue_codegen_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod widget_hover_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod widget_input_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod widget_panel_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod widget_shapes_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod widgets_tests;
 
 #[cfg(test)]

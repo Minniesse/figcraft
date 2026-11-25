@@ -206,10 +206,11 @@ impl FigApp {
         self.end_input_frame(&ctx);
         // Plugins installed, removed or set up are kept at once: a crash doesn't lose them.
         // So are the owner tokens of files put online, and preferences a command keeps at once.
-        if std::mem::take(&mut self.session.plugins.unsaved)
-            | std::mem::take(&mut self.session.live.unsaved)
-            | std::mem::take(&mut self.session.prefs_unsaved)
-        {
+        #[cfg(feature = "plugins")]
+        let plugins = std::mem::take(&mut self.session.plugins.unsaved);
+        #[cfg(not(feature = "plugins"))]
+        let plugins = false;
+        if plugins | std::mem::take(&mut self.session.live.unsaved) | std::mem::take(&mut self.session.prefs_unsaved) {
             self.services.save_prefs(&self.session.prefs);
         }
         #[cfg(not(target_arch = "wasm32"))]

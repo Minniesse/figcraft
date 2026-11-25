@@ -37,6 +37,7 @@ pub enum Command {
     Commands(CommandsArgs),
     Mcp(McpArgs),
     /// Publish plugins to a server's plugin directory
+    #[cfg(feature = "plugins")]
     Plugin {
         #[command(subcommand)]
         command: PluginCommand,
@@ -216,6 +217,7 @@ pub struct McpArgs {
     pub roots: RootArgs,
 }
 
+#[cfg(feature = "plugins")]
 #[derive(Subcommand)]
 pub enum PluginCommand {
     Publish(PublishArgs),
@@ -226,6 +228,7 @@ pub enum PluginCommand {
 /// The folder holds figcraft-plugin.json, its module and an optional assets/ folder. The server's
 /// key comes from the address or the FIGCRAFT_SERVER_KEY environment variable (which keeps it out
 /// of the shell history); it is never printed.
+#[cfg(feature = "plugins")]
 #[derive(Args)]
 pub struct PublishArgs {
     /// The plugin folder
@@ -362,7 +365,9 @@ mod tests {
     use clap::CommandFactory;
     use clap::error::ErrorKind;
 
-    use super::{Cli, Command, ConnectCommand, PluginCommand, parse};
+    #[cfg(feature = "plugins")]
+    use super::PluginCommand;
+    use super::{Cli, Command, ConnectCommand, parse};
 
     fn try_parse(args: &[&str]) -> Result<Cli, clap::Error> {
         parse(std::iter::once("figcraft-cli").chain(args.iter().copied()).map(Into::into).collect())
@@ -474,10 +479,14 @@ mod tests {
         assert_eq!(a.timeout, Some(300));
         let Command::Mcp(a) = ok(&["mcp", "--automation-read-root", "in", "--automation-write-root", "out"]) else { panic!("mcp") };
         assert_eq!((a.roots.automation_read_root, a.roots.automation_write_root), (vec!["in".to_owned()], vec!["out".to_owned()]));
-        let Command::Plugin { command: PluginCommand::Publish(a) } = ok(&["plugin", "publish", "dist/counter", "--server", "ws://h:47900/"]) else {
-            panic!("plugin")
-        };
-        assert_eq!((a.folder.as_str(), a.server.as_str()), ("dist/counter", "ws://h:47900/"));
+        #[cfg(feature = "plugins")]
+        {
+            let Command::Plugin { command: PluginCommand::Publish(a) } = ok(&["plugin", "publish", "dist/counter", "--server", "ws://h:47900/"])
+            else {
+                panic!("plugin")
+            };
+            assert_eq!((a.folder.as_str(), a.server.as_str()), ("dist/counter", "ws://h:47900/"));
+        }
         let Command::Connect { command: ConnectCommand::Publish(a) } = ok(&["connect", "publish", "ui.figcraft"]) else { panic!("connect") };
         assert_eq!((a.file.as_str(), a.mappings.as_str(), a.dry_run), ("ui.figcraft", "figcraft.connect.json", false));
         let Command::Connect { command: ConnectCommand::Publish(a) } =

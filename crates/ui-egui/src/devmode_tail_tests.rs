@@ -65,6 +65,7 @@ fn dev_mode_keys_refuse_design_edits_and_say_why() {
     assert_eq!(x(&u), Some(21.0));
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn read_only_plugins_run_from_the_inspect_tab_show_their_panel() {
     use base64::Engine as _;

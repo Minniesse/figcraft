@@ -11,6 +11,7 @@ use serde_json::{Value, json};
 use crate::Session;
 use crate::params::id_of;
 use crate::proto_run::{branch, set_mode, set_variable};
+#[cfg(feature = "plugins")]
 use crate::widgets::click_on;
 
 fn ex(s: &mut Session, cmd: &str, p: Value) -> Value {
@@ -62,6 +63,7 @@ fn controller_buttons_fire_key_gamepad_triggers() {
     assert!(uses_gamepad(doc), "the player polls controllers only for prototypes that use them");
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn widgets_react_to_clicks_on_the_prototypes_own_copy() {
     let mut s = crate::widgets_tests::session();

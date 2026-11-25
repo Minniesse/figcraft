@@ -25,6 +25,8 @@ enum Ours {
     Bound(&'static str),
     /// Bound to this command on other keys where the documented ones collide with another
     /// documented shortcut: (command, macOS keys, Windows/Linux keys; empty: the macOS keys).
+    // Only the plugins row is moved: unused in a build without `plugins`.
+    #[cfg_attr(not(feature = "plugins"), allow(dead_code))]
     Moved(&'static str, &'static [&'static str], &'static [&'static str]),
     /// A held key, pointer gesture or presentation key; the shortcuts panel lists it under this label.
     Gesture(&'static str),
@@ -86,9 +88,11 @@ static ROWS: &[Row] = &[
     doc(Essential, "Open the keyboard shortcuts panel", &["Ctrl+Shift+?"], &[], Bound("help.shortcuts"), "Control on macOS too (Shift+Cmd+? is the system's Help search)"),
     doc(Essential, "Show or hide the interface", &["Cmd+\\"], &[], Bound("view.toggleUi"), ""),
     doc(Essential, "Find layers and text", &["Cmd+F"], &[], Bound("edit.findReplace"), ""),
+    #[cfg(feature = "collab")]
     doc(Essential, "Chat at your cursor in a live session", &["/"], &[], Bound("collab.cursorChat"), ""),
     doc(Essential, "Sample a colour", &["I", "Ctrl+C"], &["I"], Bound("edit.pickColor"), "Control+C on macOS only (Ctrl+C copies elsewhere)"),
     doc(Essential, "Save to version history", &["Alt+Cmd+S"], &["Ctrl+Alt+S"], Bound("file.saveVersion"), ""),
+    #[cfg(feature = "plugins")]
     doc(Essential, "Run the last plugin", &["Alt+Cmd+P"], &["Ctrl+Alt+P"], Moved("plugins.runLast", &["Alt+Cmd+P"], &["Ctrl+Alt+Shift+P"]),
         "conflict: the documentation also gives Ctrl+Alt+P to pixel preview on Windows; pixel preview keeps it, the plugin takes Ctrl+Alt+Shift+P"),
     pin(Essential, "view.fullscreen", &["Ctrl+Cmd+F"], &["F11"]),
@@ -408,6 +412,8 @@ fn every_default_binding_is_in_the_table() {
     }
 }
 
+// The counts docs/ui-parity.md quotes take in the live-session and plugin shortcuts.
+#[cfg(all(feature = "collab", feature = "plugins"))]
 #[test]
 fn counts_match_the_docs() {
     let documented: Vec<&Row> = ROWS.iter().filter(|r| r.documented).collect();

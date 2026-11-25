@@ -46,6 +46,7 @@ pub mod measure_overlay;
 pub mod proto_canvas;
 pub mod render_worker;
 pub(crate) mod selection_spacing;
+#[cfg(feature = "plugins")]
 pub mod widget_bar;
 
 pub struct CanvasState {
@@ -405,6 +406,7 @@ pub fn show(app: &mut FigApp, ui: &mut Ui, worker: &mut Worker) {
     crate::board_bar::show(app, &ctx);
     crate::board_connect::show(app, &ctx);
     crate::board_facilitate::show(app, &ctx, rect);
+    #[cfg(feature = "plugins")]
     crate::widget_bar::show(app, &ctx);
     crate::selection_spacing::draw(app, &painter);
     crate::comments::draw(app, &painter);

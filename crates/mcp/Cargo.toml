@@ -9,10 +9,11 @@ description = "FigCraft MCP server: JSON-RPC 2.0 over stdio, driving a headless 
 workspace = true
 
 [features]
-default = ["collab", "font-download"]
+default = ["collab", "font-download", "plugins"]
 # The headless session's network link for live sessions (figcraft-collab-net: WebSocket and TLS client).
 collab = ["dep:figcraft-collab-net", "figcraft-engine/collab"]
 font-download = ["figcraft-engine/font-download"]
+plugins = ["figcraft-engine/plugins"]
 
 [dependencies]
 figcraft-engine = { workspace = true }

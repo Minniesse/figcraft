@@ -9,9 +9,11 @@ description = "FigCraft egui frontend (the Figma-style UI: canvas, toolbar, laye
 workspace = true
 
 [features]
-default = ["collab", "font-download"]
+default = ["collab", "font-download", "plugins"]
 collab = ["figcraft-engine/collab"]
 font-download = ["figcraft-engine/font-download"]
+# The Plugins window, plugin panels and widget menus.
+plugins = ["figcraft-engine/plugins"]
 
 [dependencies]
 craft-ui = { workspace = true }

@@ -1,4 +1,6 @@
-use super::{Arc, BTreeMap, Deserialize, Document, NodeId, Serialize, Value, cmd, live, online, plugins};
+#[cfg(feature = "plugins")]
+use super::plugins;
+use super::{Arc, BTreeMap, Deserialize, Document, NodeId, Serialize, Value, cmd, live, online};
 
 /// The smallest and largest interface size, relative to the system's display scale (1.0 is the
 /// system's own size).
@@ -69,6 +71,7 @@ pub struct Prefs {
     /// builds, off for development builds.
     pub invite_links: Option<bool>,
     /// Installed plugins (Plugins menu), in menu order.
+    #[cfg(feature = "plugins")]
     #[serde(serialize_with = "plugins::persisted")]
     pub plugins: Vec<plugins::InstalledPlugin>,
     /// Plugins' own settings (`setting_set`), by plugin id, then key: JSON values, capped per
@@ -150,6 +153,7 @@ impl Default for Prefs {
             auto_save: false,
             start_on_home: false,
             invite_links: None,
+            #[cfg(feature = "plugins")]
             plugins: Vec::new(),
             plugin_settings: BTreeMap::new(),
             plugin_directory: None,

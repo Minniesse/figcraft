@@ -176,6 +176,7 @@ pub static KEYS: &[Binding] = &[
     #[cfg(feature = "collab")]
     k(Essential, "collab.cursorChat", &["/"]),
     // Ctrl+Alt+P is Pixel preview on Windows and Linux here.
+    #[cfg(feature = "plugins")]
     k(Essential, "plugins.runLast", &["Alt+Cmd+P"]).win(&["Ctrl+Alt+Shift+P"]),
     // Tools
     k(Tools, "tool.move", &["V"]),

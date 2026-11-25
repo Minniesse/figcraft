@@ -190,6 +190,7 @@ fn double_clicking_a_field_edits_it_on_the_canvas() {
     assert!(s.message.as_deref().is_some_and(|m| m.contains("no plugin")), "{:?}", s.message);
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn a_field_edit_syncs_in_a_live_session() {
     use crate::live_tests::{push, relay, serve_as, session as live};

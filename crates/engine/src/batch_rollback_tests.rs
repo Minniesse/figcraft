@@ -1,7 +1,10 @@
 use serde_json::json;
 
+#[cfg(feature = "plugins")]
+use crate::EngineError;
+use crate::Session;
+#[cfg(feature = "plugins")]
 use crate::plugins_tests::{OnRefusal, install, manifest, script};
-use crate::{EngineError, Session};
 
 fn id(value: &serde_json::Value) -> crate::NodeId {
     crate::params::id_of(&value["id"]).unwrap()
@@ -143,6 +146,7 @@ fn failed_group_restores_each_tabs_history_after_undo_close_and_open() {
     }
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn failed_plugin_run_restores_each_document_without_restoring_unrelated_state() {
     let mut s = Session::new();

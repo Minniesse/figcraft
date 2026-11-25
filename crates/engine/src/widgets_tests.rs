@@ -348,6 +348,7 @@ fn plugins_cant_forge_widgets_or_call_widget_commands() {
     assert_eq!((layer_count(&s), undo_len(&s)), (layers + 1, undo + 1));
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn widget_state_syncs_in_a_live_session() {
     use crate::live_tests::{push, relay, serve_as, session as live};

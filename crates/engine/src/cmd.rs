@@ -111,8 +111,11 @@ fn registry() -> &'static Registry {
         #[cfg(feature = "collab")]
         list.extend(crate::collab::specs());
         list.extend(crate::branches::specs());
+        #[cfg(feature = "plugins")]
         list.extend(crate::plugins::specs());
+        #[cfg(feature = "plugins")]
         list.extend(crate::plugin_directory::specs());
+        #[cfg(feature = "plugins")]
         list.extend(crate::widgets::specs());
         #[cfg(feature = "collab")]
         list.extend(crate::live::specs());

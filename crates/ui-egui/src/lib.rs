@@ -226,10 +226,12 @@ mod pen_mode_tests;
 #[cfg(test)]
 mod perf_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod plugin_panel_tests;
 #[cfg(test)]
 mod plugin_save_ui_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod plugins_browse_tests;
 #[cfg(test)]
 mod popover_tests;
@@ -348,6 +350,7 @@ pub use canvas::measure_overlay;
 pub use canvas::proto_canvas;
 pub use canvas::render_worker;
 use canvas::selection_spacing;
+#[cfg(feature = "plugins")]
 pub use canvas::widget_bar;
 pub use dialogs::branch_ui;
 pub use dialogs::credits;

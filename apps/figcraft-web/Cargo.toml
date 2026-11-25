@@ -10,9 +10,10 @@ publish = false
 workspace = true
 
 [features]
-default = ["collab", "font-download"]
+default = ["collab", "font-download", "plugins"]
 collab = ["dep:figcraft-collab-net", "figcraft-engine/collab", "figcraft-ui-egui/collab"]
 font-download = ["figcraft-engine/font-download", "figcraft-ui-egui/font-download"]
+plugins = ["figcraft-engine/plugins", "figcraft-ui-egui/plugins"]
 
 [[bin]]
 name = "figcraft-web"

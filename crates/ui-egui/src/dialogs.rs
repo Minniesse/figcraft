@@ -33,6 +33,10 @@ pub mod branch_ui;
 pub mod credits;
 pub mod import_report;
 pub mod missing_fonts;
+#[cfg(feature = "plugins")]
+pub mod plugins_ui;
+#[cfg(not(feature = "plugins"))]
+#[path = "dialogs/plugins_ui_off.rs"]
 pub mod plugins_ui;
 pub mod sampled_color;
 pub mod updates_ui;

@@ -253,8 +253,11 @@ pub static MENU: &[MenuItem] = &[
     m!("Vector", "Reverse path direction", "vector.reverse"),
     m!("Vector", "Offset path", "vector.offset"),
     // Plugins
+    #[cfg(feature = "plugins")]
     m!("Plugins", "Run last plugin", "plugins.runLast"),
+    #[cfg(feature = "plugins")]
     m!("Plugins", "Manage plugins…", "plugins.manage"),
+    #[cfg(feature = "plugins")]
     m!("Plugins/Development", "Import plugin from manifest…", "plugin.import"),
     // Preferences
     m!("Preferences", "Snap to geometry", "view.snapGeometry"),

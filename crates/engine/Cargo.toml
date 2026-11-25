@@ -9,10 +9,13 @@ description = "FigCraft engine: sessions, undo history, the command registry eve
 workspace = true
 
 [features]
-default = ["collab", "font-download"]
+default = ["collab", "font-download", "plugins"]
 # Live sessions and online files: every `collab.*` command (the network transport is figcraft-collab-net,
 # which the app, the MCP server and the web build install); off in the KatWork build.
 collab = []
+# Plugins and widgets: the WebAssembly sandbox (figcraft-plugin, wasmi) and every `plugin.*`, `plugins.*`,
+# `plugin.directory.*` and `widget.*` command; off in the KatWork build.
+plugins = ["dep:figcraft-plugin"]
 # Downloading a missing font from the font store (a network client); off in the KatWork build.
 font-download = ["dep:craft-font-store"]
 
@@ -30,7 +33,7 @@ figcraft-svg = { workspace = true }
 figcraft-pdf = { workspace = true }
 figcraft-vectordrawable = { workspace = true }
 craft-docpath = { workspace = true }
-figcraft-plugin = { workspace = true }
+figcraft-plugin = { workspace = true, optional = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

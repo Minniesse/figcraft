@@ -17,6 +17,29 @@ Based on FigCraft by the ArtCraft team (https://github.com/storytold/figcraft). 
 | `chore(katwork): remove the ArtCraft marks` | not proposed upstream (the brand terms let a fork that proposes changes keep the marks; this one is a distributed modified version) |
 | `feat(katwork): font-download feature, on by default` | draft, not opened (in the fork PR body) |
 | `feat(katwork): collab feature, on by default` | draft, not opened (in the fork PR body) |
+| `feat(katwork): plugins feature, on by default` | draft, not opened (in the fork PR body) |
+
+## The KatWork build
+
+Three Cargo features, each on by default so an upstream build is unchanged, are off in the KatWork build:
+
+- `collab` (figcraft-engine, figcraft-mcp, figcraft-web; forwarded by figcraft-ui-egui and the CLI): live sessions and
+  online files. With it off every `collab.*` command is unknown, and figcraft-collab-net (the WebSocket and TLS client,
+  tungstenite, rustls, webpki-roots) is not built; figcraft-collab, the protocol core with no networking, stays.
+- `plugins` (figcraft-engine; forwarded by figcraft-ui-egui, figcraft-mcp, the CLI and the web crate): the WebAssembly
+  plugin sandbox (figcraft-plugin, wasmi). With it off every `plugin.*`, `plugins.*`, `plugin.directory.*` and
+  `widget.*` command is unknown, the Plugins menu and windows are gone, a widget saved in a file is a plain frame, and
+  `figcraft-cli plugin publish` does not exist.
+- `font-download` (figcraft-engine; forwarded likewise): the font store's network client (craft-font-store, ureq).
+  With it off `font.download` and `font.downloads` are unknown and no font is ever downloaded.
+
+The CLI: `cargo build --locked --release -p figcraft-cli --no-default-features`. The web build: trunk with
+`data-cargo-no-default-features` on `apps/figcraft-web` (no extra features). Both builds also set
+`FIGCRAFT_DEFAULT_SERVER` to empty in the build environment (`FIGCRAFT_DEFAULT_SERVER= cargo build ...`): the engine
+reads it with `option_env!` at compile time, and an empty value leaves no default sharing server in the binary
+(with `collab` off nothing would use it anyway). `scripts/katwork-profile.sh` (CI job `katwork-profile`) checks that
+the gated crates are not in either build graph, and `crates/engine/tests/katwork_profile.rs` that the commands are
+unknown.
 
 ## The marks
 

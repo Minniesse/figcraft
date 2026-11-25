@@ -143,7 +143,11 @@ fn help_after_a_subcommand_prints_the_usage() {
         &["perf", "--help"],
         &["mcp", "--attach", "notaport", "--help"],
         &["mcp", "--bogus", "--help"],
-    ] {
+    ]
+    .into_iter()
+    // A build without `plugins` has no `plugin` subcommand.
+    .filter(|a| cfg!(feature = "plugins") || a[0] != "plugin")
+    {
         let out = bin().args(args).stdin(Stdio::null()).output().unwrap();
         assert_eq!(out.status.code(), Some(0), "{args:?}: {}", String::from_utf8_lossy(&out.stderr));
         let text = String::from_utf8_lossy(&out.stdout);

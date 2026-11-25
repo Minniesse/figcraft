@@ -5,6 +5,7 @@ use serde_json::json;
 
 use crate::Session;
 use crate::components::tests::ex;
+#[cfg(feature = "plugins")]
 use crate::plugins_tests::{OnRefusal, install, manifest, script};
 
 const SECRET: &str = "/home/someone/private/clients/acme.figcraft";
@@ -36,6 +37,7 @@ fn an_agent_gets_names_and_ids_but_no_paths() {
     assert!(!list.to_string().contains(SECRET));
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn a_plugin_gets_names_but_no_paths() {
     let mut s = two_files();
@@ -47,6 +49,7 @@ fn a_plugin_gets_names_but_no_paths() {
     assert!(!out.contains(SECRET) && !out.contains("path"), "{out}");
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn a_plugin_gets_library_names_but_not_their_links() {
     const LINK: &str = "ws://tracker.example:9/?file=f&token=per-file-secret";
@@ -65,6 +68,7 @@ fn a_plugin_gets_library_names_but_not_their_links() {
     assert!(!out.contains("per-file-secret") && !out.contains("\\\"path\\\""), "{out}");
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn a_plugin_gets_a_fixed_message_for_library_update_failures() {
     const LINK: &str = "/home/someone/private/kits/kit.figcraft";
