@@ -80,11 +80,12 @@ pub enum Download {
     Failed(String),
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(not(target_arch = "wasm32"), feature = "font-download"))]
 pub use download::{allow_downloads, downloads, downloads_allowed, source};
 
-/// The browser keeps its built-in fonts: nothing is downloaded there.
-#[cfg(target_arch = "wasm32")]
+/// The browser keeps its built-in fonts, and a build without `font-download` has no font store: nothing is
+/// downloaded there.
+#[cfg(any(target_arch = "wasm32", not(feature = "font-download")))]
 mod no_download {
     pub fn source(_: &str) -> Option<String> {
         None
@@ -96,10 +97,11 @@ mod no_download {
         false
     }
     pub fn allow_downloads() -> std::result::Result<(), String> {
-        Err("fonts aren't downloaded in the browser".into())
+        Err(if cfg!(target_arch = "wasm32") { "fonts aren't downloaded in the browser" } else { "font downloads aren't available in this build" }
+            .into())
     }
 }
-#[cfg(target_arch = "wasm32")]
+#[cfg(any(target_arch = "wasm32", not(feature = "font-download")))]
 pub use no_download::{allow_downloads, downloads, downloads_allowed, source};
 
 /// Every string value of variable `id` in any mode, following aliases (each variable once).
@@ -196,12 +198,12 @@ pub fn specs() -> Vec<CommandSpec> {
             refit_text
         ),
     ];
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(all(not(target_arch = "wasm32"), feature = "font-download"))]
     list.extend(download::specs());
     list
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(not(target_arch = "wasm32"), feature = "font-download"))]
 pub mod download;
 
 #[cfg(test)]

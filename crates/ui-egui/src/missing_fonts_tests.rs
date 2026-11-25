@@ -152,6 +152,7 @@ fn placing_images_or_clearing_recents_does_not_bring_it_back() {
 }
 
 /// The middle of the button labelled `label` in the window, from the AccessKit tree.
+#[cfg(feature = "font-download")]
 fn click_button(u: &mut Ui, label: &str) {
     u.ctx.enable_accesskit();
     u.frame(vec![]);
@@ -164,6 +165,8 @@ fn click_button(u: &mut Ui, label: &str) {
     u.frame(vec![]);
 }
 
+// Needs the font store, which only a build with `font-download` has.
+#[cfg(feature = "font-download")]
 #[test]
 fn a_family_the_font_store_has_offers_download_and_asks_before_any_download() {
     // A store folder of the tests' own, where downloading was never turned on.

@@ -13,6 +13,10 @@ path = "src/main.rs"
 [lints]
 workspace = true
 
+[features]
+default = ["font-download"]
+font-download = ["figcraft-engine/font-download", "figcraft-mcp/font-download"]
+
 [dependencies]
 figcraft-engine = { workspace = true }
 figcraft-doc = { workspace = true }

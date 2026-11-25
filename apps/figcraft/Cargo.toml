@@ -11,8 +11,8 @@ default-run = "figcraft"
 workspace = true
 
 [dependencies]
-figcraft-engine = { workspace = true }
-figcraft-ui-egui = { workspace = true }
+figcraft-engine = { workspace = true, features = ["font-download"] }
+figcraft-ui-egui = { workspace = true, features = ["font-download"] }
 figcraft-collab-net = { workspace = true }
 figcraft-format = { workspace = true }
 figcraft-text = { workspace = true }

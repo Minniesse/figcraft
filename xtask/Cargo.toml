@@ -10,4 +10,4 @@ workspace = true
 
 [dependencies]
 serde_json = { workspace = true }
-figcraft-engine = { workspace = true }
+figcraft-engine = { workspace = true, features = ["font-download"] }

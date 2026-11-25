@@ -9,6 +9,10 @@ publish = false
 [lints]
 workspace = true
 
+[features]
+default = ["font-download"]
+font-download = ["figcraft-engine/font-download", "figcraft-ui-egui/font-download"]
+
 [[bin]]
 name = "figcraft-web"
 path = "src/main.rs"

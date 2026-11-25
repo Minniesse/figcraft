@@ -8,6 +8,10 @@ description = "FigCraft MCP server: JSON-RPC 2.0 over stdio, driving a headless 
 [lints]
 workspace = true
 
+[features]
+default = ["font-download"]
+font-download = ["figcraft-engine/font-download"]
+
 [dependencies]
 figcraft-engine = { workspace = true }
 figcraft-collab-net = { workspace = true }
