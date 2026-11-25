@@ -9,7 +9,10 @@ description = "FigCraft engine: sessions, undo history, the command registry eve
 workspace = true
 
 [features]
-default = ["font-download"]
+default = ["collab", "font-download"]
+# Live sessions and online files: every `collab.*` command (the network transport is figcraft-collab-net,
+# which the app, the MCP server and the web build install); off in the KatWork build.
+collab = []
 # Downloading a missing font from the font store (a network client); off in the KatWork build.
 font-download = ["dep:craft-font-store"]
 

@@ -42,7 +42,9 @@ pub static MENU: &[MenuItem] = &[
     m!("File", "Create branch…", "branch.create"),
     m!("File", SEP, ""),
     // FigCraft's own (live sessions): not in the reference menu, so not counted by `parity`.
+    #[cfg(feature = "collab")]
     m!("File", "Join live session…", "collab.join"),
+    #[cfg(feature = "collab")]
     m!("File", "Publish to server…", "collab.publish"),
     m!("File", SEP, ""),
     m!("File", "Export…", "file.export"),

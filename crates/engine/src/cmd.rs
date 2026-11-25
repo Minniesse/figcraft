@@ -108,13 +108,17 @@ fn registry() -> &'static Registry {
         list.extend(crate::dev_resources::specs());
         list.extend(crate::dev_measurements::specs());
         list.extend(crate::distance::specs());
+        #[cfg(feature = "collab")]
         list.extend(crate::collab::specs());
         list.extend(crate::branches::specs());
         list.extend(crate::plugins::specs());
         list.extend(crate::plugin_directory::specs());
         list.extend(crate::widgets::specs());
+        #[cfg(feature = "collab")]
         list.extend(crate::live::specs());
+        #[cfg(feature = "collab")]
         list.extend(crate::online::specs());
+        #[cfg(feature = "collab")]
         list.extend(crate::invite_links::specs());
         list.extend(crate::templates::specs());
         list.extend(crate::datafill::specs());

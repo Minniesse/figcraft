@@ -70,8 +70,11 @@ pub fn start() {
                     let recovered = restore_unsaved(&mut session);
                     // Live sessions: the browser joins sessions and publishes files to servers;
                     // whatever arrives on the socket wakes the page for a frame.
-                    let ctx = cc.egui_ctx.clone();
-                    session.live.install(Box::new(figcraft_collab_net::NetLink::new(std::sync::Arc::new(move || ctx.request_repaint()))));
+                    #[cfg(feature = "collab")]
+                    {
+                        let ctx = cc.egui_ctx.clone();
+                        session.live.install(Box::new(figcraft_collab_net::NetLink::new(std::sync::Arc::new(move || ctx.request_repaint()))));
+                    }
                     let mut fig = FigApp::new(session, Box::new(WebServices { reduce_motion, ctx: cc.egui_ctx.clone(), host: app_bridge.clone() }));
                     fig.note_recovered(recovered);
                     if let Err(e) = crate::pasted::install(cc.egui_ctx.clone()) {

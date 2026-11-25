@@ -16,6 +16,7 @@ Based on FigCraft by the ArtCraft team (https://github.com/storytold/figcraft). 
 |---|---|
 | `chore(katwork): remove the ArtCraft marks` | not proposed upstream (the brand terms let a fork that proposes changes keep the marks; this one is a distributed modified version) |
 | `feat(katwork): font-download feature, on by default` | draft, not opened (in the fork PR body) |
+| `feat(katwork): collab feature, on by default` | draft, not opened (in the fork PR body) |
 
 ## The marks
 

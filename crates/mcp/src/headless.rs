@@ -47,10 +47,16 @@ impl Headless {
 
     /// Wrap an existing session (it can host and join live sessions: an agent takes part with
     /// its own cursor, `collab.cursor`).
-    pub fn with_session(mut session: Session) -> Self {
-        if !session.live.available() {
-            session.live.install(Box::new(figcraft_collab_net::NetLink::new(std::sync::Arc::new(|| {}))));
-        }
+    pub fn with_session(session: Session) -> Self {
+        // A build without `collab` has no network link: its sessions stay local.
+        #[cfg(feature = "collab")]
+        let session = {
+            let mut session = session;
+            if !session.live.available() {
+                session.live.install(Box::new(figcraft_collab_net::NetLink::new(std::sync::Arc::new(|| {}))));
+            }
+            session
+        };
         Self { session }
     }
 
