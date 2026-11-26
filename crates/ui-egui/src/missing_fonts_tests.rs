@@ -198,3 +198,30 @@ fn a_family_the_font_store_has_offers_download_and_asks_before_any_download() {
     assert_eq!(listed(&u)["consent"], Value::Null);
     assert!(!figcraft_engine::fonts::downloads_allowed() && figcraft_engine::fonts::downloads().is_empty());
 }
+
+/// A build without `font-download` offers no download: a family the font store has is listed
+/// like any other missing font, with no source and no Download button.
+#[cfg(not(feature = "font-download"))]
+#[test]
+fn without_font_download_no_family_offers_a_download() {
+    if !fonts_indexed() {
+        eprintln!("skipped: system fonts opted out");
+        return;
+    }
+    let Some(store) = ["Lato", "Merriweather"].into_iter().find(|f| !figcraft_text::has_family(f)) else {
+        eprintln!("skipped: these fonts are installed");
+        return;
+    };
+    let path = saved("no-download", &["FigCraft Missing Download", store]);
+    let mut u = Ui::new(Session::new());
+    u.app.run_user("file.open", json!({"path": path}));
+    std::fs::remove_file(&path).unwrap();
+    u.frame(vec![]);
+    assert_eq!(
+        listed(&u)["families"],
+        json!([{"family": "FigCraft Missing Download", "layers": 2, "source": null}, {"family": store, "layers": 1, "source": null}])
+    );
+    let shown = crate::import_report_tests::shown_texts(u.frame_output(vec![]).shapes);
+    assert!(shown.iter().any(|t| t == store), "control: the family is listed: {shown:?}");
+    assert!(!shown.iter().any(|t| t == "Download"), "{shown:?}");
+}

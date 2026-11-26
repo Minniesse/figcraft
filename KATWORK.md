@@ -18,6 +18,7 @@ Based on FigCraft by the ArtCraft team (https://github.com/storytold/figcraft). 
 | `feat(katwork): font-download feature, on by default` | draft, not opened (in the fork PR body) |
 | `feat(katwork): collab feature, on by default` | draft, not opened (in the fork PR body) |
 | `feat(katwork): plugins feature, on by default` | draft, not opened (in the fork PR body) |
+| `feat(katwork): hide the UI of compiled-out features` | draft, not opened (part of the collab and plugins drafts) |
 
 ## The KatWork build
 
@@ -32,6 +33,13 @@ Three Cargo features, each on by default so an upstream build is unchanged, are 
   `figcraft-cli plugin publish` does not exist.
 - `font-download` (figcraft-engine; forwarded likewise): the font store's network client (craft-font-store, ureq).
   With it off `font.download` and `font.downloads` are unknown and no font is ever downloaded.
+
+With the features off the UI shows none of what they leave out (figcraft-ui-egui, so the web build): no Share
+button or people in the right panel, no Online section, "Join with a code" field or sharing tip on the Home screen, no
+sharing server or invite-link setting in Preferences, no Plugins menu, no Plugins & widgets tab in the Actions palette,
+no plugin windows, panels or widget menus, and no font Download button. The menu, palette and shortcut entries of the
+removed commands are gone with them (catalog and keymap). Tests: `crates/ui-egui/src/katwork_hidden_tests.rs` and
+`missing_fonts_tests::without_font_download_no_family_offers_a_download`, run with every feature off.
 
 The CLI: `cargo build --locked --release -p figcraft-cli --no-default-features`. The web build: trunk with
 `data-cargo-no-default-features` on `apps/figcraft-web` (no extra features). Both builds also set

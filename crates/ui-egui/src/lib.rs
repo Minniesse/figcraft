@@ -151,6 +151,9 @@ mod import_report_tests;
 #[cfg(test)]
 mod inspect_fields_tests;
 #[cfg(test)]
+#[cfg(not(any(feature = "collab", feature = "plugins")))]
+mod katwork_hidden_tests;
+#[cfg(test)]
 mod layers_behaviour_tests;
 #[cfg(test)]
 mod layers_component_rows_tests;

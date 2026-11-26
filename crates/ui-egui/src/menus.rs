@@ -427,7 +427,8 @@ pub fn popups(app: &mut FigApp, ctx: &egui::Context) {
                         close = true;
                     }
                     ui.add_space(6.0);
-                    for top in TOP_MENUS {
+                    // A build without `plugins` has no Plugins menu.
+                    for top in TOP_MENUS.iter().filter(|m| cfg!(feature = "plugins") || **m != "Plugins") {
                         if submenu_at(
                             ui,
                             SubmenuOptions { area: Id::unique(("menu", *top)), key: top, label: tr(top), gap: 12.0, constrain: false, tokens: &t },
