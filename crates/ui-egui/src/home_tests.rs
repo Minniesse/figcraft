@@ -62,6 +62,7 @@ fn templates_tab(u: &mut Ui) -> Vec<Shape> {
     settle(u)
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn the_sidebar_has_recents_online_and_templates_and_no_placeholders() {
     let mut u = first_run();
@@ -425,6 +426,7 @@ fn an_open_files_long_name_and_path_share_their_row_without_overlapping() {
     assert!(texts(&shapes(&mut u)).iter().any(|(t, _, _)| t.contains(long)), "no tooltip with the full path");
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn the_getting_started_card_closes_stays_closed_and_comes_back_from_help() {
     let mut u = first_run();
@@ -469,6 +471,7 @@ fn the_file_menu_item_shows_the_templates() {
     assert!(has_text(&settle(&mut u), "Wireframe kit"));
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn tab_walks_the_sidebar_in_order_before_a_sections_controls() {
     let mut u = first_run();

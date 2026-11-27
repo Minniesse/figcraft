@@ -170,20 +170,26 @@ mod layers_wide_names_tests;
 #[cfg(test)]
 mod library_beacon_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_chat_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_docs_tests;
 #[cfg(test)]
 mod live_join_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_joining_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_server_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_share_tests;
 #[cfg(test)]
 mod live_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_text_tests;
 #[cfg(test)]
 mod local_fonts_tests;
@@ -206,6 +212,7 @@ mod missing_fonts_tests;
 #[cfg(test)]
 mod naming_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod online_tests;
 #[cfg(test)]
 mod open_issues_tests;
@@ -232,6 +239,7 @@ mod perf_tests;
 #[cfg(feature = "plugins")]
 mod plugin_panel_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod plugin_save_ui_tests;
 #[cfg(test)]
 #[cfg(feature = "plugins")]

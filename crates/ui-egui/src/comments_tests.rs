@@ -386,6 +386,7 @@ fn a_comment_posted_in_the_overlap_anchors_to_the_presented_frame() {
     assert_eq!(comments(&u)["open"], c.id, "its pin shows in the presenter");
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn a_draft_that_fails_to_post_keeps_its_text() {
     let (mut h, _) = crate::live_tests::Harness::new();

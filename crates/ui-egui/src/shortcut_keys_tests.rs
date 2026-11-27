@@ -158,6 +158,7 @@ fn presentation_keys() {
     assert!(u.app.ui.present.is_some(), "still presenting");
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn multiplayer_cursors_key_hides_and_shows_others_cursors() {
     use crate::live_tests::{Harness, cursor};

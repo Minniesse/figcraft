@@ -7,8 +7,12 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, AtomicUsize, Ordering};
 
+#[cfg(feature = "plugins")]
 use base64::Engine as _;
-use egui::{Event, PointerButton, Rect, pos2};
+#[cfg(feature = "plugins")]
+use egui::pos2;
+#[cfg(feature = "plugins")]
+use egui::{Event, PointerButton, Rect};
 use figcraft_doc::NodeId;
 use figcraft_engine::Session;
 use serde_json::{Value, json};
@@ -121,6 +125,7 @@ fn prototypes_without_gamepad_triggers_dont_poll() {
 
 /// A widget plugin: inserted it shows "one" (state n: 1) with a clickable square `inc`; clicked,
 /// it shows "two" (n: 2).
+#[cfg(feature = "plugins")]
 fn widget_module() -> Vec<u8> {
     let look = |n: u32, label: &str| {
         json!({"state": {"n": n}, "root": {"type": "frame", "name": "Tally", "layout": "horizontal", "gap": 8, "padding": 10, "fill": "#FFFFFF",
@@ -154,6 +159,7 @@ fn widget_module() -> Vec<u8> {
 }
 
 /// Screen A (presented) holding the widget; the widget and its clickable square.
+#[cfg(feature = "plugins")]
 fn widget_setup() -> (Harness, NodeId, NodeId) {
     let mut s = Session::new();
     let manifest = json!({"id": "org.test.tally", "name": "Tally", "version": "1.0.0", "main": "w.wasm", "api": 3, "widget": true, "permissions": {"access": "read"}});
@@ -169,21 +175,25 @@ fn widget_setup() -> (Harness, NodeId, NodeId) {
     (u, w, square)
 }
 
+#[cfg(feature = "plugins")]
 fn state(doc: &figcraft_doc::Document, w: NodeId) -> String {
     doc.node(w).and_then(|n| n.plugin_data.get("figcraft.widget.state").cloned()).unwrap_or_default()
 }
 
 /// Where layer `id` shows in the presenter.
+#[cfg(feature = "plugins")]
 fn on_screen(u: &Harness, id: NodeId) -> Rect {
     let p = u.app.ui.present.as_ref().unwrap();
     let (_, place, _) = p.shown.unwrap();
     place.rect(p.doc.as_ref().unwrap().world_bounds(id).unwrap())
 }
 
+#[cfg(feature = "plugins")]
 fn toast(u: &Harness) -> Option<String> {
     u.app.ui.toast.as_ref().map(|t| t.0.clone())
 }
 
+#[cfg(feature = "plugins")]
 fn click(u: &mut Harness, at: egui::Pos2) {
     let b = |pressed| Event::PointerButton { pos: at, button: PointerButton::Primary, pressed, modifiers: Default::default() };
     u.frame(vec![Event::PointerMoved(at)]);
@@ -192,6 +202,7 @@ fn click(u: &mut Harness, at: egui::Pos2) {
     u.frames(2, Vec::new);
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn widgets_react_to_clicks_in_the_presented_prototype() {
     let (mut u, w, square) = widget_setup();
@@ -218,6 +229,7 @@ fn widgets_react_to_clicks_in_the_presented_prototype() {
     assert_eq!(player(&u), r#"{"n":1}"#);
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn a_widget_without_its_plugin_says_so_and_stays() {
     let (mut u, w, square) = widget_setup();

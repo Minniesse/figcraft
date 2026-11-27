@@ -172,6 +172,7 @@ fn the_selection_bar_sets_a_connectors_style_and_offers_nothing_for_a_stamp() {
     assert!(bar(&u).is_none());
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn a_board_you_only_view_offers_no_bar() {
     let (mut h, _) = crate::live_tests::Harness::new();
