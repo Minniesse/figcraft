@@ -62,36 +62,47 @@ fn templates_tab(u: &mut Ui) -> Vec<Shape> {
     settle(u)
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn the_sidebar_has_recents_online_and_templates_and_no_placeholders() {
+    // A build without `collab` has no Online section: the sidebar is Recents and Templates.
+    let online = cfg!(feature = "collab");
     let mut u = first_run();
     let s = shapes(&mut u);
-    assert!(has_text(&s, "Recents") && has_text(&s, "Online") && has_text(&s, "Templates"));
+    assert!(has_text(&s, "Recents") && has_text(&s, "Templates"));
+    assert_eq!(has_text(&s, "Online"), online);
     assert!(!has_text(&s, "Drafts") && !has_text(&s, "Community"));
     u.ctx.enable_accesskit();
     u.frame(vec![]);
     let nodes: Vec<_> = u.frame_output(vec![]).platform_output.accesskit_update.unwrap().nodes.into_iter().map(|(_, n)| n).collect();
     let tab = |label: &str| nodes.iter().find(|n| n.role() == Role::Tab && n.label() == Some(label)).unwrap_or_else(|| panic!("no tab {label}"));
-    assert_eq!((tab("Recents").is_selected(), tab("Online").is_selected(), tab("Templates").is_selected()), (Some(true), Some(false), Some(false)));
+    assert_eq!((tab("Recents").is_selected(), tab("Templates").is_selected()), (Some(true), Some(false)));
     // In reading order: Recents, Online, Templates.
     let top = |label: &str| tab(label).bounds().unwrap().y0;
-    assert!(top("Recents") < top("Online") && top("Online") < top("Templates"));
+    assert!(top("Recents") < top("Templates"));
+    if online {
+        assert_eq!(tab("Online").is_selected(), Some(false));
+        assert!(top("Recents") < top("Online") && top("Online") < top("Templates"));
+    }
     // Each is clicked into, and `ui.inspect` and `ui.set {homeSection}` name them the same way.
-    for (label, section) in [("Online", Section::Online), ("Templates", Section::Templates), ("Recents", Section::Recents)] {
+    let sections = [("Online", Section::Online), ("Templates", Section::Templates), ("Recents", Section::Recents)];
+    for (label, section) in sections.into_iter().filter(|(l, _)| online || *l != "Online") {
         let s = shapes(&mut u);
         click(&mut u, text_center(&s, label));
         assert_eq!(u.app.ui.home_view.section, section);
         let inspect = u.app.inspect();
         assert_eq!(inspect["homeSection"], section.id());
-        assert_eq!(inspect["online"]["open"], section == Section::Online);
+        if online {
+            assert_eq!(inspect["online"]["open"], section == Section::Online);
+        }
         assert_eq!(Section::parse(section.id()), Some(section));
     }
     assert_eq!(Section::parse("drafts"), None);
-    // The Online section is the online files' own.
-    u.app.ui.home_view.section = Section::Online;
-    let s = settle(&mut u);
-    assert!(has_text(&s, "Online files") && !has_text(&s, "Getting started") && !has_text(&s, "Start from a template"));
+    if online {
+        // The Online section is the online files' own.
+        u.app.ui.home_view.section = Section::Online;
+        let s = settle(&mut u);
+        assert!(has_text(&s, "Online files") && !has_text(&s, "Getting started") && !has_text(&s, "Start from a template"));
+    }
 }
 
 #[test]
@@ -426,14 +437,15 @@ fn an_open_files_long_name_and_path_share_their_row_without_overlapping() {
     assert!(texts(&shapes(&mut u)).iter().any(|(t, _, _)| t.contains(long)), "no tooltip with the full path");
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn the_getting_started_card_closes_stays_closed_and_comes_back_from_help() {
     let mut u = first_run();
     let s = settle(&mut u);
     assert!(has_text(&s, "Getting started"));
     for tip in ["Draw a frame", "Add auto layout", "Make a component", "Prototype", "Share with a code", "Export"] {
-        assert!(has_text(&s, tip), "{tip}");
+        // A build without `collab` has no sharing, so no "Share with a code" tip.
+        let shown = tip != "Share with a code" || cfg!(feature = "collab");
+        assert_eq!(has_text(&s, tip), shown, "{tip}");
     }
     // Shortcuts come from the keymap.
     let key = crate::home::shortcut("layout.add").unwrap();
@@ -471,7 +483,6 @@ fn the_file_menu_item_shows_the_templates() {
     assert!(has_text(&settle(&mut u), "Wireframe kit"));
 }
 
-#[cfg(feature = "collab")]
 #[test]
 fn tab_walks_the_sidebar_in_order_before_a_sections_controls() {
     let mut u = first_run();
@@ -484,7 +495,13 @@ fn tab_walks_the_sidebar_in_order_before_a_sections_controls() {
         }
     }
     let at = |name: &str| names.iter().position(|n| n == name).unwrap_or_else(|| panic!("Tab never reached {name:?}: {names:?}"));
-    assert!(at("Recents") < at("Online") && at("Online") < at("Templates") && at("Templates") < at("Open file"), "{names:?}");
+    assert!(at("Recents") < at("Templates") && at("Templates") < at("Open file"), "{names:?}");
+    // A build without `collab` has no Online section.
+    if cfg!(feature = "collab") {
+        assert!(at("Recents") < at("Online") && at("Online") < at("Templates"), "{names:?}");
+    } else {
+        assert!(!names.iter().any(|n| n == "Online"), "{names:?}");
+    }
 }
 
 /// A temporary directory of its own for a test's files, removed with them when dropped.
