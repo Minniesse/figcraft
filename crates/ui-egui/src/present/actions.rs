@@ -83,6 +83,7 @@ impl Presenter {
     /// Run the widget clicks the player took: each calls its plugin back on the player's copy (the
     /// prototype's own state of the widget), as on the canvas but without touching the file.
     /// Returns what went wrong, for a toast.
+    #[cfg(feature = "plugins")]
     pub fn click_widgets(&mut self, s: &figcraft_engine::Session) -> Option<String> {
         let mut error = None;
         for (id, target) in std::mem::take(&mut self.widget_clicks) {
@@ -96,6 +97,13 @@ impl Presenter {
             }
         }
         error
+    }
+
+    /// A build without `plugins` has no widgets: nothing to call back.
+    #[cfg(not(feature = "plugins"))]
+    pub fn click_widgets(&mut self, _: &figcraft_engine::Session) -> Option<String> {
+        self.widget_clicks.clear();
+        None
     }
 
     pub(crate) fn perform(&mut self, a: &Action, node: NodeId, tr: Transition, dur: f64, easing: Easing, rect: Option<Rect>, now: f64) -> bool {

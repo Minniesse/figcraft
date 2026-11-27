@@ -10,7 +10,9 @@ mod perf;
 use std::io::Write;
 use std::process::ExitCode;
 
-use args::{Cli, Command, ConnectCommand, PluginCommand, RootArgs};
+#[cfg(feature = "plugins")]
+use args::PluginCommand;
+use args::{Cli, Command, ConnectCommand, RootArgs};
 use serde_json::{Value, json};
 
 /// The automation roots a file subcommand was given, if any. Omitting both leaves the run
@@ -93,6 +95,7 @@ fn run(cli: Cli) -> CliResult<ExitCode> {
         }
         // `--attach` conflicts with the roots: the app runs the commands, only its own roots can confine them.
         Command::Mcp(a) => mcp(a.attach.as_deref(), a.timeout, roots_of(&a.roots)?),
+        #[cfg(feature = "plugins")]
         Command::Plugin { command: PluginCommand::Publish(a) } => publish_plugin(&a.folder, &a.server),
         Command::Connect { command: ConnectCommand::Publish(a) } => confined(&a.roots, || files::connect_publish(&a.file, &a.mappings, a.dry_run)),
         Command::Perf(a) => {
@@ -128,6 +131,7 @@ fn commands(as_json: bool, filter: Option<&str>) {
 
 /// Publish the plugin folder `folder` to the plugin directory at `server` (the key from the address
 /// or `FIGCRAFT_SERVER_KEY`); never prints the key.
+#[cfg(feature = "plugins")]
 fn publish_plugin(folder: &str, server: &str) -> CliResult<ExitCode> {
     let address = server.split('?').next().unwrap_or_default().to_string();
     let server = match std::env::var("FIGCRAFT_SERVER_KEY") {

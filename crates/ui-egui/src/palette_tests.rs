@@ -5,6 +5,7 @@
 
 use egui::{Event, Key, Modifiers, Pos2};
 use figcraft_engine::Session;
+#[cfg(feature = "plugins")]
 use serde_json::json;
 
 use crate::layers_drag_tests::Ui;
@@ -74,6 +75,7 @@ fn gone_entries_drop_out_of_recents() {
 }
 
 /// A used plugin (API 4, several commands) resolves back to a Recents row.
+#[cfg(feature = "plugins")]
 #[test]
 fn used_plugin_resolves_to_a_recent_row() {
     let mut u = Ui::new(Session::new());

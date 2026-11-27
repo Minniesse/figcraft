@@ -6,6 +6,7 @@ use serde_json::{Value, json};
 
 use crate::board_tests::{board, id};
 use crate::cmd::facilitate::{clock, timer_after, timer_state};
+#[cfg(feature = "collab")]
 use crate::collab_live_tests::Room;
 use crate::tools::{PointerEvent, PointerKind};
 use crate::{EngineError, Session};
@@ -217,6 +218,7 @@ fn the_timer_and_votes_save_and_old_files_open() {
     assert!(plain.get("timer").is_none() && plain.get("vote").is_none() && plain.get("votes").is_none());
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn everyone_in_a_live_session_shares_the_timer_and_the_vote() {
     let mut s = board();

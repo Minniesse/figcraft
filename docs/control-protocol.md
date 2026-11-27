@@ -1,7 +1,7 @@
 # FigCraft control protocol
 
 The desktop app can be driven by other programs (tests, scripts, `figcraft-cli mcp --attach`,
-sibling Crafting Apps) through a loopback socket:
+sibling Craft apps) through a loopback socket:
 
 ```sh
 cargo run -p figcraft -- --control 7979 [file.figcraft|file.svg|image]

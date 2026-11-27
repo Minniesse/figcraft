@@ -9,7 +9,7 @@ description = "FigCraft live sessions over the network: the WebSocket transport,
 workspace = true
 
 [dependencies]
-figcraft-engine = { workspace = true }
+figcraft-engine = { workspace = true, features = ["collab"] }
 figcraft-collab = { workspace = true }
 figcraft-doc = { workspace = true }
 log = { workspace = true }

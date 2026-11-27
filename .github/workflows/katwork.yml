@@ -1,0 +1,45 @@
+# KatWork fork checks (see KATWORK.md). Actions are locked by commit in actions.lock.
+name: KatWork
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  no-marks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - run: bash scripts/check-no-marks.sh --self-test
+      - run: bash scripts/check-no-marks.sh
+
+  katwork-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: step-security/dtolnay-rust-toolchain@v1.0.0
+        with:
+          toolchain: 1.97.1
+      - name: The gated crates are not in the KatWork build graphs
+        run: bash scripts/katwork-profile.sh
+      - name: The gate test, with the gate off
+        # The test file compiles only with the gate off: fail if it ran no test (zero tests pass green).
+        run: |
+          set -o pipefail
+          cargo test --locked -p figcraft-engine --no-default-features --test katwork_profile 2>&1 | tee katwork-profile-test.log
+          grep -E 'test result: ok\. 3 passed; 0 failed' katwork-profile-test.log
+      - name: The UI of the compiled-out features is hidden, with every feature off
+        run: |
+          set -o pipefail
+          cargo test --locked -p figcraft-ui-egui --no-default-features --lib -- katwork_hidden without_font_download 2>&1 | tee katwork-hidden-test.log
+          grep -E 'test result: ok\. 6 passed; 0 failed' katwork-hidden-test.log
+      - name: The UI library's whole suite, with every feature off
+        # Tests of the compiled-out live sessions and plugins are cfg-gated to the default build.
+        run: |
+          set -o pipefail
+          cargo test --locked -p figcraft-ui-egui --no-default-features --lib 2>&1 | tee katwork-ui-test.log
+          grep -E 'test result: ok\. 1287 passed; 0 failed' katwork-ui-test.log

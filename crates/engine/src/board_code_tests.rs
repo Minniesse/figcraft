@@ -2,15 +2,18 @@
 //! tall as its lines and its text plain code, and the text editor's three literal-typing lines.
 
 use figcraft_color::{Color, Paint};
+#[cfg(feature = "collab")]
+use figcraft_doc::FileKind;
 use figcraft_doc::{
-    BoardItem, CODE_FONT, CODE_MAX_CHARS, CodeLanguage, EffectKind, FileKind, LayoutMode, LineHeight, ListStyle, NodeId, NodeKind, Sizing,
-    TextAlignH, TextAutoResize, TextCase, TextData, TextDecoration,
+    BoardItem, CODE_FONT, CODE_MAX_CHARS, CodeLanguage, EffectKind, LayoutMode, LineHeight, ListStyle, NodeId, NodeKind, Sizing, TextAlignH,
+    TextAutoResize, TextCase, TextData, TextDecoration,
 };
 use figcraft_geom::Rect;
 use serde_json::{Value, json};
 
 use crate::board::{is_code_text, text_of};
 use crate::board_tests::{board, id, node};
+#[cfg(feature = "collab")]
 use crate::collab_live_tests::Room;
 use crate::tools::{PointerEvent, PointerKind};
 use crate::{EngineError, Session};
@@ -442,6 +445,7 @@ fn lists_links_and_styled_ranges_do_not_stick() {
     }
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn saved_files_live_sessions_and_a_second_pass() {
     let mut s = board();

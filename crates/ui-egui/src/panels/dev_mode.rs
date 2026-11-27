@@ -13,6 +13,7 @@ use figcraft_engine::code_connect;
 use figcraft_engine::codegen::{CodeLang, code_for};
 use figcraft_engine::dev_measurements::{self, Placed};
 use figcraft_engine::devinspect::{self, DevItem, Prop};
+#[cfg(feature = "plugins")]
 use figcraft_engine::plugins::Access;
 use figcraft_engine::snap::Guide;
 use figcraft_engine::{components, dev_resources};
@@ -499,7 +500,12 @@ pub fn connect_section(app: &mut FigApp, ui: &mut Ui, doc: &Document, id: NodeId
     ui.add_space(4.0);
 }
 
+/// Dev Mode plugins: none in a build without `plugins`.
+#[cfg(not(feature = "plugins"))]
+pub fn plugins_section(_: &mut FigApp, _: &mut Ui) {}
+
 /// Dev Mode plugins: the installed plugins that only read the document, run from the Inspect tab.
+#[cfg(feature = "plugins")]
 pub fn plugins_section(app: &mut FigApp, ui: &mut Ui) {
     let runnable: Vec<(String, String, String)> = app
         .session

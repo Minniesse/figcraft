@@ -6,7 +6,9 @@ use egui::{Event, Key};
 use figcraft_engine::live::{Event as LiveEvent, HostOptions, LiveLink, Presence, PublishOptions, SessionInfo, Status};
 use serde_json::json;
 
-use crate::live_tests::{Harness, has_text, text_center};
+#[cfg(feature = "collab")]
+use crate::live_tests::has_text;
+use crate::live_tests::{Harness, text_center};
 
 fn escape(h: &mut Harness) {
     for pressed in [true, false] {
@@ -94,6 +96,7 @@ fn a_link_that_cant_be_used_opens_the_dialog_with_it() {
     assert_eq!(h.app.session.live().status, Status::Off);
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn the_browser_shares_through_a_server_but_does_not_host() {
     let (mut h, _) = Harness::new();

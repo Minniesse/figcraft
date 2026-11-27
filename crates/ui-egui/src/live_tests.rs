@@ -6,15 +6,20 @@
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use egui::{Color32, Event, PointerButton, Pos2, RawInput, Rect, Shape, ViewportId, pos2, vec2};
+#[cfg(feature = "collab")]
+use egui::{Color32, pos2};
+use egui::{Event, PointerButton, Pos2, RawInput, Rect, Shape, ViewportId, vec2};
 use figcraft_doc::NodeId;
 use figcraft_engine::Session;
-use figcraft_engine::live::{Event as LiveEvent, HostOptions, LiveLink, Peer, Presence, Role, SessionInfo, Status};
+use figcraft_engine::live::{Event as LiveEvent, HostOptions, LiveLink, Presence, SessionInfo};
+#[cfg(feature = "collab")]
+use figcraft_engine::live::{Peer, Role, Status};
 use serde_json::json;
 
 use crate::present_tests::id;
 use crate::{FigApp, NoServices};
 
+#[cfg(feature = "collab")]
 pub(crate) const HANA: Color32 = Color32::from_rgb(0x97, 0x47, 0xFF);
 
 /// A link that hands out scripted events, as the session started last.
@@ -44,6 +49,7 @@ pub(crate) struct Harness {
     pub(crate) ctx: egui::Context,
     pub(crate) app: FigApp,
     time: f64,
+    #[cfg(feature = "collab")]
     events: Arc<Mutex<Vec<LiveEvent>>>,
 }
 
@@ -69,7 +75,13 @@ impl Harness {
         s.execute("select.set", &json!({"ids": []})).unwrap();
         let events = Arc::new(Mutex::new(Vec::new()));
         s.live.install(Box::new(Mock(events.clone(), 0)));
-        let h = Harness { ctx: egui::Context::default(), app: FigApp::new(s, Box::new(NoServices)), time: 0.0, events };
+        let h = Harness {
+            ctx: egui::Context::default(),
+            app: FigApp::new(s, Box::new(NoServices)),
+            time: 0.0,
+            #[cfg(feature = "collab")]
+            events,
+        };
         (h, rect)
     }
 
@@ -107,16 +119,19 @@ impl Harness {
         }
     }
 
+    #[cfg(feature = "collab")]
     pub(crate) fn send(&mut self, e: Vec<LiveEvent>) {
         self.events.lock().unwrap().extend(e);
     }
 
+    #[cfg(feature = "collab")]
     /// Joined as Ada, with Hana (the host) already here.
     pub(crate) fn joined(&mut self) {
         self.app.session.execute("collab.join", &json!({"link": "figcraft://join?host=127.0.0.1:47900&file=f&token=t"})).unwrap();
         self.welcome();
     }
 
+    #[cfg(feature = "collab")]
     /// The host's welcome for the join started last: you are Ada, with Hana (the host) here.
     pub(crate) fn welcome(&mut self) {
         let info = SessionInfo {
@@ -136,6 +151,7 @@ impl Harness {
         self.send(vec![LiveEvent::Welcome { info, peers: vec![Peer { client_id: 1, name: "Hana".into(), color: "#9747FF".into() }] }]);
     }
 
+    #[cfg(feature = "collab")]
     /// The host's welcome with the document (a session server seeded with this document): it opens
     /// as a new tab, which is then the synced document.
     pub(crate) fn sync(&mut self) {
@@ -152,10 +168,12 @@ impl Harness {
         assert!(self.app.session.live_shared());
     }
 
+    #[cfg(feature = "collab")]
     pub(crate) fn page(&self) -> NodeId {
         self.app.session.page().unwrap()
     }
 
+    #[cfg(feature = "collab")]
     /// Frames until the window stops asking for more (the canvas render finishing aside):
     /// whether it did within a few hundred frames.
     pub(crate) fn goes_quiet(&mut self) -> bool {
@@ -192,11 +210,13 @@ pub(crate) fn text_center(shapes: &[Shape], s: &str) -> Pos2 {
     p + size / 2.0
 }
 
+#[cfg(feature = "collab")]
 /// Filled polygons and outlines in `c`.
 pub(crate) fn filled(shapes: &[Shape], c: Color32) -> usize {
     shapes.iter().filter(|s| matches!(s, Shape::Path(p) if p.fill == c)).count()
 }
 
+#[cfg(feature = "collab")]
 fn outlined(shapes: &[Shape], c: Color32) -> usize {
     shapes
         .iter()
@@ -204,10 +224,12 @@ fn outlined(shapes: &[Shape], c: Color32) -> usize {
         .count()
 }
 
+#[cfg(feature = "collab")]
 pub(crate) fn cursor(page: NodeId, x: f64, y: f64) -> Presence {
     Presence { cursor: Some((page, x, y)), ..Presence::default() }
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn remote_cursors_selections_and_avatars_draw() {
     let (mut h, rect) = Harness::new();
@@ -236,6 +258,7 @@ fn remote_cursors_selections_and_avatars_draw() {
     assert_eq!(h.app.inspect()["live"]["cursorsShown"], json!([1]));
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn a_cursor_glides_then_rests() {
     let (mut h, _) = Harness::new();
@@ -260,6 +283,7 @@ fn a_cursor_glides_then_rests() {
     assert_eq!(crate::live::shown_at(&h.app)[0].1, (-50.0, 20.0));
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn cursors_follow_pages_in_a_shared_document() {
     let (mut h, rect) = Harness::new();
@@ -298,6 +322,7 @@ fn cursors_follow_pages_in_a_shared_document() {
 
 /// Asserts clicking a peer's avatar follows that peer, and Escape or scrolling the canvas
 /// stops following.
+#[cfg(feature = "collab")]
 #[test]
 fn clicking_an_avatar_follows_and_escape_stops() {
     let (mut h, _) = Harness::new();
@@ -334,6 +359,7 @@ fn clicking_an_avatar_follows_and_escape_stops() {
     assert_eq!(h.app.session.live().follow, None);
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn share_popover_and_join_dialog() {
     let (mut h, _) = Harness::new();

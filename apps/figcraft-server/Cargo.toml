@@ -19,6 +19,8 @@ workspace = true
 [dependencies]
 figcraft-collab = { workspace = true }
 figcraft-collab-net = { workspace = true }
+# The engine collab-net carries, with every feature an upstream build has (the workspace turns its defaults off).
+figcraft-engine = { workspace = true, features = ["collab", "font-download", "plugins"] }
 # Checking a team library before keeping it (read as files using it read it).
 figcraft-format = { workspace = true }
 # Checking plugin bundles before the plugin directory keeps them (never run here).
@@ -43,6 +45,6 @@ rustix = { version = "1", default-features = false, features = ["std", "fs"] }
 # Crafting hostile archives (zip bombs) in tests.
 zip = { workspace = true }
 wat = { workspace = true }
-figcraft-engine = { workspace = true }
+figcraft-engine = { workspace = true, features = ["collab", "font-download", "plugins"] }
 figcraft-doc = { workspace = true }
 tungstenite = { version = "0.30", default-features = false, features = ["handshake"] }

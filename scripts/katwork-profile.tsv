@@ -1,0 +1,21 @@
+# KatWork build profile (scripts/katwork-profile.sh): <package> <native|wasm32> <katwork-features|-> <crate> <present|absent>
+figcraft-cli	native	-	figcraft-collab-net	present
+figcraft-cli	native	-	tungstenite	present
+figcraft-cli	native	-	rustls	present
+figcraft-cli	native	-	figcraft-plugin	present
+figcraft-cli	native	-	wasmi	present
+figcraft-cli	native	-	ureq	present
+figcraft-cli	native	-	craft-font-store	present
+figcraft-web	wasm32	-	figcraft-collab-net	present
+figcraft-web	wasm32	-	tungstenite	absent
+figcraft-web	wasm32	-	rustls	absent
+figcraft-web	wasm32	-	figcraft-plugin	present
+figcraft-web	wasm32	-	wasmi	present
+figcraft-web	wasm32	-	ureq	absent
+figcraft-web	wasm32	-	craft-font-store	absent
+# Each gated library crate defaults its gate on too (an upstream build of the crate alone is unchanged).
+figcraft-engine	native	-	figcraft-plugin	present
+figcraft-engine	native	-	craft-font-store	present
+figcraft-engine	native	-	figcraft-engine/collab	present
+figcraft-mcp	native	-	figcraft-collab-net	present
+figcraft-ui-egui	native	-	figcraft-plugin	present

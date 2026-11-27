@@ -9,6 +9,7 @@ use serde_json::{Value, json};
 use crate::Session;
 use crate::board::text_of;
 use crate::board_tests::{board, connector, drawn, id, near, node};
+#[cfg(feature = "collab")]
 use crate::collab_live_tests::Room;
 
 fn bx(s: &Session, id: NodeId) -> Rect {
@@ -241,6 +242,7 @@ fn a_deleted_node_leaves_its_children_in_place_and_takes_its_branches() {
     assert!(s.doc().unwrap().contains(c1));
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn two_people_adding_at_once_end_with_one_layout() {
     let mut s = board();

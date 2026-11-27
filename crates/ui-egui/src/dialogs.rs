@@ -33,6 +33,10 @@ pub mod branch_ui;
 pub mod credits;
 pub mod import_report;
 pub mod missing_fonts;
+#[cfg(feature = "plugins")]
+pub mod plugins_ui;
+#[cfg(not(feature = "plugins"))]
+#[path = "dialogs/plugins_ui_off.rs"]
 pub mod plugins_ui;
 pub mod sampled_color;
 pub mod updates_ui;
@@ -159,15 +163,15 @@ fn about_body(ui: &mut egui::Ui, t: &Tokens) {
         });
     });
     ui.add_space(12.0);
-    ui.label(tr(
-        "Interface design and prototyping. A free, open-source, clean-room design tool written from scratch in Rust, part of the ArtCraft Crafting Apps.",
-    ));
+    ui.label(tr("Interface design and prototyping. A free, open-source, clean-room design tool written from scratch in Rust."));
     ui.add_space(8.0);
-    ui.hyperlink_to("getartcraft.com/apps/figcraft", "https://getartcraft.com/apps/figcraft");
-    ui.hyperlink_to(tr("Join us on Discord"), "https://discord.gg/artcraft");
+    ui.hyperlink_to("github.com/storytold/figcraft", "https://github.com/storytold/figcraft");
     ui.add_space(8.0);
+    ui.label(RichText::new(tr("Dual-licensed MIT OR Apache-2.0.")).color(t.text_secondary).font(regular(11.0)));
     ui.label(
-        RichText::new(tr("Dual-licensed MIT OR Apache-2.0. Made by the ArtCraft team and community.")).color(t.text_secondary).font(regular(11.0)),
+        RichText::new("Based on FigCraft by the ArtCraft team (https://github.com/storytold/figcraft). This build is not an ArtCraft product.")
+            .color(t.text_secondary)
+            .font(regular(11.0)),
     );
 }
 
@@ -274,8 +278,9 @@ pub fn show(app: &mut FigApp, ctx: &Context) {
             for c in toggles {
                 app.run(c, json!({}));
             }
-            // Where the app registers itself as the opener of invite links (Windows).
-            if let Some(on) = app.session.invite_links_on() {
+            // Where the app registers itself as the opener of invite links (Windows); not in a build
+            // without `collab`.
+            if let Some(on) = app.session.invite_links_on().filter(|_| cfg!(feature = "collab")) {
                 if crate::widgets::checkbox(ui, on, tr("Open invite links in FigCraft")) {
                     app.run("collab.registerLinks", json!({"on": !on}));
                 }
@@ -290,22 +295,27 @@ pub fn show(app: &mut FigApp, ctx: &Context) {
                 ui.label(tr("Your name"));
                 crate::live::name_field(app, ui, egui::Id::unique("pref_user_name"), 160.0);
             });
-            ui.add_space(8.0);
-            ui.horizontal(|ui| {
-                ui.label(tr("Server for online sharing"));
-                // Where Share ▸ Online keeps files and join codes are asked; no key here
-                // (preferences are saved as text).
-                let name = tr("Server for online sharing");
-                if let Some(url) = crate::widgets::text_field_named(ui, egui::Id::unique("pref_publish_server"), &prefs.publish_server, 220.0, name) {
-                    app.run("pref.publishServer", json!({"url": url}));
+            // The sharing server: not in a build without `collab`.
+            if cfg!(feature = "collab") {
+                ui.add_space(8.0);
+                ui.horizontal(|ui| {
+                    ui.label(tr("Server for online sharing"));
+                    // Where Share ▸ Online keeps files and join codes are asked; no key here
+                    // (preferences are saved as text).
+                    let name = tr("Server for online sharing");
+                    if let Some(url) =
+                        crate::widgets::text_field_named(ui, egui::Id::unique("pref_publish_server"), &prefs.publish_server, 220.0, name)
+                    {
+                        app.run("pref.publishServer", json!({"url": url}));
+                    }
+                    let usual = prefs.publish_server == figcraft_engine::live::DEFAULT_SERVER;
+                    if crate::widgets::button(ui, tr("Reset"), false, !usual).on_hover_text(tr("Back to the FigCraft server")).clicked() {
+                        app.run("pref.publishServer", json!({}));
+                    }
+                });
+                if prefs.publish_server.is_empty() {
+                    crate::widgets::label(ui, tr("Online sharing is off: files are shared on the local network only."), t.text_secondary);
                 }
-                let usual = prefs.publish_server == figcraft_engine::live::DEFAULT_SERVER;
-                if crate::widgets::button(ui, tr("Reset"), false, !usual).on_hover_text(tr("Back to the FigCraft server")).clicked() {
-                    app.run("pref.publishServer", json!({}));
-                }
-            });
-            if prefs.publish_server.is_empty() {
-                crate::widgets::label(ui, tr("Online sharing is off: files are shared on the local network only."), t.text_secondary);
             }
             ui.add_space(8.0);
             ui.horizontal(|ui| {

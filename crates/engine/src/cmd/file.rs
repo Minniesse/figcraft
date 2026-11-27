@@ -21,6 +21,7 @@ mod open;
 mod save;
 mod version;
 
+#[cfg(feature = "plugins")]
 pub(crate) use export::FORBIDDEN_FILE_NAME_CHARS;
 #[cfg(test)]
 use export::add_member;

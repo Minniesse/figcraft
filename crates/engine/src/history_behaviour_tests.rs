@@ -580,6 +580,7 @@ fn branches_and_the_version_history() {
 // ---------------------------------------------------------------------------------------------
 // Live sessions.
 
+#[cfg(feature = "collab")]
 #[test]
 fn comments_and_restores_in_a_live_session() {
     use crate::collab_live_tests::{Room, frame_and_rect};

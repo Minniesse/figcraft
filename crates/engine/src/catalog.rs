@@ -42,7 +42,9 @@ pub static MENU: &[MenuItem] = &[
     m!("File", "Create branch…", "branch.create"),
     m!("File", SEP, ""),
     // FigCraft's own (live sessions): not in the reference menu, so not counted by `parity`.
+    #[cfg(feature = "collab")]
     m!("File", "Join live session…", "collab.join"),
+    #[cfg(feature = "collab")]
     m!("File", "Publish to server…", "collab.publish"),
     m!("File", SEP, ""),
     m!("File", "Export…", "file.export"),
@@ -251,8 +253,11 @@ pub static MENU: &[MenuItem] = &[
     m!("Vector", "Reverse path direction", "vector.reverse"),
     m!("Vector", "Offset path", "vector.offset"),
     // Plugins
+    #[cfg(feature = "plugins")]
     m!("Plugins", "Run last plugin", "plugins.runLast"),
+    #[cfg(feature = "plugins")]
     m!("Plugins", "Manage plugins…", "plugins.manage"),
+    #[cfg(feature = "plugins")]
     m!("Plugins/Development", "Import plugin from manifest…", "plugin.import"),
     // Preferences
     m!("Preferences", "Snap to geometry", "view.snapGeometry"),

@@ -58,7 +58,11 @@ fn completions_name_the_cli_its_subcommands_and_options() -> std::io::Result<()>
             "format",
             "automation-read-root",
             "server",
-        ] {
+        ]
+        .into_iter()
+        // A build without `plugins` has no `plugin` subcommand, nor its `--server`.
+        .filter(|w| cfg!(feature = "plugins") || !["plugin", "server"].contains(w))
+        {
             assert!(text.contains(word), "{name} does not contain {word}");
         }
         assert!(!text.contains("man-and-completions"), "{name} names the example instead of the CLI");
@@ -95,24 +99,24 @@ fn man_pages_cover_every_subcommand_without_synthetic_help_pages() -> std::io::R
         }
     }
     pages.sort();
-    assert_eq!(
-        pages,
-        [
-            "figcraft-cli-commands.1",
-            "figcraft-cli-connect-publish.1",
-            "figcraft-cli-connect.1",
-            "figcraft-cli-convert.1",
-            "figcraft-cli-export.1",
-            "figcraft-cli-info.1",
-            "figcraft-cli-mcp.1",
-            "figcraft-cli-perf.1",
-            "figcraft-cli-plugin-publish.1",
-            "figcraft-cli-plugin.1",
-            "figcraft-cli-render.1",
-            "figcraft-cli-run.1",
-            "figcraft-cli.1",
-        ]
-    );
+    let mut want = vec![
+        "figcraft-cli-commands.1",
+        "figcraft-cli-connect-publish.1",
+        "figcraft-cli-connect.1",
+        "figcraft-cli-convert.1",
+        "figcraft-cli-export.1",
+        "figcraft-cli-info.1",
+        "figcraft-cli-mcp.1",
+        "figcraft-cli-perf.1",
+        "figcraft-cli-plugin-publish.1",
+        "figcraft-cli-plugin.1",
+        "figcraft-cli-render.1",
+        "figcraft-cli-run.1",
+        "figcraft-cli.1",
+    ];
+    // A build without `plugins` has no `plugin` subcommand.
+    want.retain(|p| cfg!(feature = "plugins") || !p.starts_with("figcraft-cli-plugin"));
+    assert_eq!(pages, want);
     for name in &pages {
         let text = fs::read_to_string(dir.join(name))?.replace("\\-", "-");
         assert!(text.contains(".SH NAME"), "{name} has no NAME section");
@@ -125,7 +129,10 @@ fn man_pages_cover_every_subcommand_without_synthetic_help_pages() -> std::io::R
         ("figcraft-cli-export.1", "--automation-read-root"),
         ("figcraft-cli-plugin-publish.1", "--server"),
         ("figcraft-cli-connect-publish.1", "--dry-run"),
-    ] {
+    ]
+    .into_iter()
+    .filter(|(p, _)| cfg!(feature = "plugins") || !p.starts_with("figcraft-cli-plugin"))
+    {
         let text = fs::read_to_string(dir.join(page))?.replace("\\-", "-");
         assert!(text.contains(option), "{page} does not contain {option}");
     }
@@ -145,7 +152,8 @@ fn generation_creates_the_output_directory_and_can_run_again() -> std::io::Resul
     fs::write(&page, "old page")?;
     generator::generate(&output)?;
     assert_eq!(fs::read(page)?, first);
-    assert_eq!(fs::read_dir(output)?.count(), 18);
+    // Two man pages fewer without the `plugin` subcommand.
+    assert_eq!(fs::read_dir(output)?.count(), if cfg!(feature = "plugins") { 18 } else { 16 });
     Ok(())
 }
 

@@ -8,9 +8,16 @@ description = "FigCraft MCP server: JSON-RPC 2.0 over stdio, driving a headless 
 [lints]
 workspace = true
 
+[features]
+default = ["collab", "font-download", "plugins"]
+# The headless session's network link for live sessions (figcraft-collab-net: WebSocket and TLS client).
+collab = ["dep:figcraft-collab-net", "figcraft-engine/collab"]
+font-download = ["figcraft-engine/font-download"]
+plugins = ["figcraft-engine/plugins"]
+
 [dependencies]
 figcraft-engine = { workspace = true }
-figcraft-collab-net = { workspace = true }
+figcraft-collab-net = { workspace = true, optional = true }
 figcraft-doc = { workspace = true }
 figcraft-geom = { workspace = true }
 figcraft-render = { workspace = true }

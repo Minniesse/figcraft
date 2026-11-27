@@ -1565,7 +1565,7 @@ pub fn inspect(app: &FigApp) -> serde_json::Value {
 }
 
 /// Peer ids drawn on the canvas, by what they point at (tests).
-#[cfg(test)]
+#[cfg(all(test, feature = "collab"))]
 pub(crate) fn shown_at(app: &FigApp) -> Vec<(u32, (f64, f64))> {
     app.ui.live.shown.iter().map(|(k, v)| (*k, *v)).collect()
 }

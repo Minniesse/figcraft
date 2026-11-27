@@ -13,6 +13,13 @@ path = "src/main.rs"
 [lints]
 workspace = true
 
+[features]
+default = ["collab", "font-download", "plugins"]
+collab = ["figcraft-engine/collab", "figcraft-mcp/collab"]
+font-download = ["figcraft-engine/font-download", "figcraft-mcp/font-download"]
+# `figcraft-cli plugin publish`.
+plugins = ["figcraft-engine/plugins", "figcraft-mcp/plugins"]
+
 [dependencies]
 figcraft-engine = { workspace = true }
 figcraft-doc = { workspace = true }

@@ -151,6 +151,9 @@ mod import_report_tests;
 #[cfg(test)]
 mod inspect_fields_tests;
 #[cfg(test)]
+#[cfg(not(any(feature = "collab", feature = "plugins")))]
+mod katwork_hidden_tests;
+#[cfg(test)]
 mod layers_behaviour_tests;
 #[cfg(test)]
 mod layers_component_rows_tests;
@@ -167,20 +170,26 @@ mod layers_wide_names_tests;
 #[cfg(test)]
 mod library_beacon_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_chat_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_docs_tests;
 #[cfg(test)]
 mod live_join_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_joining_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_server_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_share_tests;
 #[cfg(test)]
 mod live_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod live_text_tests;
 #[cfg(test)]
 mod local_fonts_tests;
@@ -203,6 +212,7 @@ mod missing_fonts_tests;
 #[cfg(test)]
 mod naming_tests;
 #[cfg(test)]
+#[cfg(feature = "collab")]
 mod online_tests;
 #[cfg(test)]
 mod open_issues_tests;
@@ -226,10 +236,13 @@ mod pen_mode_tests;
 #[cfg(test)]
 mod perf_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod plugin_panel_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod plugin_save_ui_tests;
 #[cfg(test)]
+#[cfg(feature = "plugins")]
 mod plugins_browse_tests;
 #[cfg(test)]
 mod popover_tests;
@@ -348,6 +361,7 @@ pub use canvas::measure_overlay;
 pub use canvas::proto_canvas;
 pub use canvas::render_worker;
 use canvas::selection_spacing;
+#[cfg(feature = "plugins")]
 pub use canvas::widget_bar;
 pub use dialogs::branch_ui;
 pub use dialogs::credits;

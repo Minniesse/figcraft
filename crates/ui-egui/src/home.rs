@@ -212,7 +212,8 @@ fn sidebar(app: &mut FigApp, ui: &mut Ui, t: &Tokens, left: Rect) {
         }
     });
     y += widgets::FIELD_H + 12.0;
-    for (section, icon, label) in Section::ALL {
+    // A build without `collab` has no online files.
+    for (section, icon, label) in Section::ALL.into_iter().filter(|s| cfg!(feature = "collab") || s.0 != Section::Online) {
         let r = Rect::from_min_size(pos2(left.min.x + 8.0, y), vec2(SIDEBAR - 16.0, 32.0));
         let resp = ui.interact(r, ui.scope_id().with(("home_section", label)), Sense::click());
         let current = app.ui.home_view.file_query.trim().is_empty() && app.ui.home_view.section == section;
@@ -363,12 +364,15 @@ fn recents(app: &mut FigApp, ui: &mut Ui, t: &Tokens) {
     if open {
         app.open_dialog();
     }
-    // Join a file someone shared (the Join dialog shows what the join is doing).
-    subheading(ui, t, tr("Join with a code"));
-    ui.scope(|ui| {
-        ui.set_max_width(540.0);
-        crate::live::join_row(app, ui, 260.0);
-    });
+    // Join a file someone shared (the Join dialog shows what the join is doing); not in a build
+    // without `collab`.
+    if cfg!(feature = "collab") {
+        subheading(ui, t, tr("Join with a code"));
+        ui.scope(|ui| {
+            ui.set_max_width(540.0);
+            crate::live::join_row(app, ui, 260.0);
+        });
+    }
     opened_join(app);
     if !app.session.prefs.getting_started_dismissed {
         ui.add_space(28.0);
@@ -439,7 +443,9 @@ fn getting_started(app: &mut FigApp, ui: &mut Ui, t: &Tokens) {
     let width = ui.available_width().min(3.0 * CARD_W + 2.0 * GAP);
     let columns = if width >= 720.0 { 3 } else { 1 };
     let (cell_w, cell_h) = ((width - 32.0) / columns as f32, 62.0);
-    let rows = TIPS.len().div_ceil(columns);
+    // A tip whose command this build leaves out (Share with a code without `collab`) isn't shown.
+    let tips: Vec<_> = TIPS.into_iter().filter(|tip| crate::menus::available(tip.2)).collect();
+    let rows = tips.len().div_ceil(columns);
     let (rect, _) = ui.allocate_exact_size(vec2(width, 52.0 + rows as f32 * cell_h + 8.0), Sense::hover());
     a11y::container_bounds(ui, rect);
     ui.painter().rect_filled(rect, CornerRadius::same(8), t.field);
@@ -455,7 +461,7 @@ fn getting_started(app: &mut FigApp, ui: &mut Ui, t: &Tokens) {
         app.run("help.gettingStarted", json!({"show": false}));
         app.services.save_prefs(&app.session.prefs);
     }
-    for (i, (title, line, command)) in TIPS.into_iter().enumerate() {
+    for (i, (title, line, command)) in tips.into_iter().enumerate() {
         let cell = Rect::from_min_size(
             rect.min + vec2(16.0 + (i % columns) as f32 * cell_w, 48.0 + (i / columns) as f32 * cell_h),
             vec2(cell_w - 16.0, cell_h),

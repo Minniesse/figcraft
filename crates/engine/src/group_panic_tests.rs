@@ -62,6 +62,7 @@ fn a_grouped_closure_that_panics_leaves_the_session_as_before() {
     assert_eq!(s.undo_depth(), (depth.0 + 2, 0));
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn a_grouped_closure_that_panics_releases_the_live_hold_so_later_edits_sync() {
     use crate::live_tests::{push, relay, serve, session};

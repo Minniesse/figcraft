@@ -62,6 +62,7 @@ mod tests {
         u.frames(2, Vec::new);
     }
 
+    #[cfg(feature = "collab")]
     fn labels(u: &mut Ui) -> Vec<(String, egui::Pos2)> {
         let out = u.frame_output(vec![]);
         let nodes = out.platform_output.accesskit_update.map(|t| t.nodes).unwrap_or_default();
@@ -74,6 +75,7 @@ mod tests {
             .collect()
     }
 
+    #[cfg(feature = "collab")]
     #[test]
     fn the_people_menu_still_lists_you_beside_an_agent() {
         let mut u = Ui::new(Session::new());

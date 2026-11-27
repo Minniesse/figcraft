@@ -9,6 +9,12 @@ publish = false
 [lints]
 workspace = true
 
+[features]
+default = ["collab", "font-download", "plugins"]
+collab = ["dep:figcraft-collab-net", "figcraft-engine/collab", "figcraft-ui-egui/collab"]
+font-download = ["figcraft-engine/font-download", "figcraft-ui-egui/font-download"]
+plugins = ["figcraft-engine/plugins", "figcraft-ui-egui/plugins"]
+
 [[bin]]
 name = "figcraft-web"
 path = "src/main.rs"
@@ -17,7 +23,7 @@ path = "src/main.rs"
 figcraft-engine = { workspace = true }
 figcraft-format = { workspace = true }
 figcraft-ui-egui = { workspace = true }
-figcraft-collab-net = { workspace = true }
+figcraft-collab-net = { workspace = true, optional = true }
 figcraft-text = { workspace = true }
 # The host messages (storytold/craft-libs): one contract and one bridge for the web builds.
 # The page command API (storytold/craft-libs#413): the request plumbing behind window.figcraft.

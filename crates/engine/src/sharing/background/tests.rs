@@ -6,7 +6,10 @@
 
 use std::sync::{Arc, Mutex};
 
-use figcraft_collab::message::{ClientMsg, LibraryReply, LibraryReq, PluginEntry, PluginReply, PluginReq};
+use figcraft_collab::message::{ClientMsg, LibraryReply, LibraryReq};
+#[cfg(feature = "plugins")]
+use figcraft_collab::message::{PluginEntry, PluginReply, PluginReq};
+#[cfg(feature = "plugins")]
 use figcraft_plugin::bundle::{Bundle, sha256_hex};
 use serde_json::json;
 
@@ -14,7 +17,9 @@ use crate::library_server::{archive, read_archive};
 use crate::live::{Event, HostOptions, LiveLink, NetReply, NetRequest, Presence, SessionInfo};
 use crate::{EngineError, Session};
 
+#[cfg(feature = "plugins")]
 const ID: &str = "org.example.tiny";
+#[cfg(feature = "plugins")]
 const SERVER: &str = "ws://127.0.0.1:9/";
 const LINK: &str = "ws://127.0.0.1:9/?file=f&token=t";
 
@@ -44,6 +49,7 @@ impl LiveLink for Link {
     fn poll(&mut self) -> Vec<(u64, Event)> {
         std::mem::take(&mut self.0.lock().unwrap().answers).into_iter().map(|e| (0, e)).collect()
     }
+    #[cfg(feature = "plugins")]
     fn plugins(&mut self, _: &str, req: PluginReq) -> Result<PluginReply, String> {
         self.0.lock().unwrap().waited += 1;
         Ok(directory(req))
@@ -62,15 +68,18 @@ impl LiveLink for Link {
     }
 }
 
+#[cfg(feature = "plugins")]
 fn wasm() -> Vec<u8> {
     wat::parse_str(r#"(module (memory (export "memory") 1) (func (export "figcraft_run") (param i32) (result i32) i32.const 0))"#).unwrap()
 }
 
+#[cfg(feature = "plugins")]
 fn bundle() -> Vec<u8> {
     let manifest = json!({"id": ID, "name": "Tiny tool", "version": "1.0.0", "main": "t.wasm", "permissions": {"access": "write", "commands": ["shape.rectangle"]}});
     Bundle { manifest: manifest.to_string(), wasm: wasm(), assets: Vec::new() }.encode()
 }
 
+#[cfg(feature = "plugins")]
 fn directory(req: PluginReq) -> PluginReply {
     let bytes = bundle();
     let entry = PluginEntry {
@@ -122,7 +131,10 @@ fn answer(s: &mut Session, wire: &Arc<Mutex<Wire>>) -> usize {
     for (job, req) in &out {
         let mut w = wire.lock().unwrap();
         let reply = match req.clone() {
+            #[cfg(feature = "plugins")]
             NetRequest::Plugins { req, .. } => NetReply::Plugins(Ok(directory(req))),
+            #[cfg(not(feature = "plugins"))]
+            NetRequest::Plugins { .. } => NetReply::Plugins(Err("no".into())),
             NetRequest::Library { req, .. } => NetReply::Library(Ok(library(&mut w, req))),
             NetRequest::Upload(_) => NetReply::Upload(Err("no".into())),
             NetRequest::Hosting { .. } => NetReply::Hosting(Err("no".into())),
@@ -143,6 +155,7 @@ fn published() -> Vec<u8> {
     archive(s.doc().unwrap().published.as_ref().unwrap()).unwrap()
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn a_continue_batch_waits_instead_of_skipping_background_work() {
     for nested in [false, true] {
@@ -172,6 +185,7 @@ fn a_continue_batch_waits_instead_of_skipping_background_work() {
     }
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn browsing_and_installing_wait_for_nothing_and_scripts_still_wait() {
     let (mut s, wire) = session(true);
@@ -199,6 +213,7 @@ fn browsing_and_installing_wait_for_nothing_and_scripts_still_wait() {
     assert_eq!(wire.lock().unwrap().waited, 1, "the background path never waited");
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn cancelled_commands_drop_their_answer_and_errors_are_the_outcome() {
     let (mut s, wire) = session(true);
@@ -271,6 +286,7 @@ fn a_rerun_acts_on_the_file_it_started_on() {
     assert_eq!(s.ds().unwrap().uid, shown);
 }
 
+#[cfg(feature = "plugins")]
 #[test]
 fn a_link_without_background_requests_is_waited_on() {
     let (mut s, wire) = session(false);
@@ -286,6 +302,7 @@ fn a_link_without_background_requests_is_waited_on() {
 /// Confined to automation roots, commands reach no server (#1095): browsing a plugin directory,
 /// hosting, joining and publishing are refused before the link is asked. Unconfined, the same
 /// request reaches the server as before.
+#[cfg(all(feature = "plugins", feature = "collab"))]
 #[test]
 fn commands_confined_to_automation_roots_reach_no_server() {
     let dir = std::env::temp_dir().join(format!("figcraft-roots-network-{}", std::process::id()));

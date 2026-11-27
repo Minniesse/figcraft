@@ -8,6 +8,7 @@ use super::{Forms, LANGS, Lang, Plural, Text, chain, counted, fill, find, lookup
 
 /// Keys looked up from data rather than written as `tr("…")` in the code: the main menu's
 /// submenu names (the engine's menu catalog) and labels of engine and document enums.
+#[cfg(all(feature = "collab", feature = "plugins"))]
 fn dynamic_keys() -> BTreeSet<String> {
     let mut keys: BTreeSet<String> = figcraft_engine::catalog::MENU.iter().flat_map(|m| m.menu.split('/')).map(str::to_string).collect();
     keys.extend(dynamic_labels().into_iter().map(str::to_string));
@@ -19,6 +20,7 @@ fn dynamic_keys() -> BTreeSet<String> {
 /// stroke caps and width profiles, effects, brushes, image filters, frame preset categories, Dev Mode
 /// properties, comment filters and sorts, change kinds, the live status.
 // shortcut: a hand-kept list; enumerate each enum's `ALL` here when a label goes missing in review.
+#[cfg(all(feature = "collab", feature = "plugins"))]
 const DATA_LABELS: &[&str] = &[
     "Added",
     "Align",
@@ -126,6 +128,7 @@ const DATA_LABELS: &[&str] = &[
 ];
 
 /// Labels of engine enums the UI shows through `tr(x.label())`, read from the engine, plus [`DATA_LABELS`].
+#[cfg(all(feature = "collab", feature = "plugins"))]
 fn dynamic_labels() -> Vec<&'static str> {
     use figcraft_engine::keymap::{GESTURES, Group};
     let mut v: Vec<&'static str> = figcraft_engine::ToolId::ALL.iter().map(|t| t.label()).collect();
@@ -154,6 +157,7 @@ fn menu_worded_differently() -> BTreeSet<&'static str> {
 }
 
 /// The string literals passed to `tr`, `trf`, `trn` and `tr_noop` in this crate's sources.
+#[cfg(all(feature = "collab", feature = "plugins"))]
 fn used_keys() -> BTreeSet<String> {
     let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
     let mut keys = BTreeSet::new();
@@ -169,6 +173,7 @@ fn used_keys() -> BTreeSet<String> {
 
 /// Every `.rs` file under `dir`, in subdirectories too, leaving out test code: `tests.rs` and
 /// anything under a `tests` directory.
+#[cfg(all(feature = "collab", feature = "plugins"))]
 fn sources(dir: &std::path::Path) -> Vec<std::path::PathBuf> {
     let mut out = Vec::new();
     for entry in std::fs::read_dir(dir).unwrap().flatten() {
@@ -189,6 +194,7 @@ fn sources(dir: &std::path::Path) -> Vec<std::path::PathBuf> {
 /// sources. The import report shows a note translated when the catalog has it, so each one is a key
 /// `en.toml` (and every complete language) must have, and an entry for a note the importers no
 /// longer give shows up as unused.
+#[cfg(all(feature = "collab", feature = "plugins"))]
 fn importer_notes() -> BTreeSet<String> {
     let src = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../format/src");
     let mut keys = BTreeSet::new();
@@ -215,6 +221,7 @@ fn importer_notes() -> BTreeSet<String> {
 }
 
 /// The `src` directory of the craft-fig sources this build uses, as Cargo resolved them.
+#[cfg(all(feature = "collab", feature = "plugins"))]
 fn craft_fig_src() -> std::path::PathBuf {
     let cargo = std::env::var("CARGO").unwrap_or_else(|_| "cargo".into());
     // Unfiltered, `cargo metadata` needs every target's packages (accesskit_ios, ...) in Cargo's
@@ -280,6 +287,7 @@ fn string_literal(s: &str) -> Option<String> {
     None
 }
 
+#[cfg(all(feature = "collab", feature = "plugins"))]
 fn placeholders(s: &str) -> BTreeSet<&str> {
     s.split('{').skip(1).filter_map(|p| p.split_once('}').map(|(name, _)| name)).collect()
 }
@@ -303,6 +311,8 @@ fn english() -> &'static Lang {
     LANGS.first().filter(|l| l.code == "en").expect("locales/en.toml is baked in first")
 }
 
+// The catalogs translate the full build: without sharing or plugins their keys and command ids look unused.
+#[cfg(all(feature = "collab", feature = "plugins"))]
 #[test]
 fn every_key_in_the_code_is_in_the_english_catalog_and_no_other() {
     let used: BTreeSet<String> = used_keys().into_iter().chain(dynamic_keys()).chain(importer_notes()).collect();
@@ -337,6 +347,8 @@ fn command_ids() -> BTreeSet<&'static str> {
         .collect()
 }
 
+// The catalogs translate the full build: without sharing or plugins their keys and command ids look unused.
+#[cfg(all(feature = "collab", feature = "plugins"))]
 #[test]
 fn catalogs_have_known_keys_and_matching_placeholders() {
     let en = english();

@@ -90,7 +90,8 @@ pub(super) fn palette(app: &mut FigApp, ctx: &egui::Context) {
                 let tabs = [(PaletteTab::All, tr("All")), (PaletteTab::Assets, tr("Assets")), (PaletteTab::Plugins, tr("Plugins & widgets"))];
                 ui.horizontal(|ui| {
                     ui.spacing_mut().item_spacing = vec2(4.0, 0.0);
-                    for (tab, label) in tabs {
+                    // A build without `plugins` has no Plugins & widgets tab.
+                    for (tab, label) in tabs.into_iter().filter(|(tab, _)| cfg!(feature = "plugins") || *tab != PaletteTab::Plugins) {
                         let active = app.ui.palette_tab == tab;
                         // The frame stays on for every tab (transparent when idle) so the
                         // active pill never moves its neighbours.
@@ -332,7 +333,14 @@ fn same_label(label: &str) -> String {
     label.trim().trim_end_matches(['…', '.']).trim_end().to_lowercase()
 }
 
+/// Installed plugins' commands: none in a build without `plugins` (nor a Plugins menu).
+#[cfg(not(feature = "plugins"))]
+fn plugin_rows(_: &FigApp, _: &str) -> Vec<ActionRow> {
+    Vec::new()
+}
+
 /// Installed plugins' commands, filtered by the query.
+#[cfg(feature = "plugins")]
 fn plugin_rows(app: &FigApp, q: &str) -> Vec<ActionRow> {
     let ql = q.to_lowercase();
     let mut rows = Vec::new();
@@ -361,7 +369,14 @@ fn plugin_rows(app: &FigApp, q: &str) -> Vec<ActionRow> {
     rows
 }
 
+/// Installed widgets: none in a build without `plugins`.
+#[cfg(not(feature = "plugins"))]
+fn widget_rows(_: &FigApp, _: &str) -> Vec<ActionRow> {
+    Vec::new()
+}
+
 /// Installed widgets, filtered by the query.
+#[cfg(feature = "plugins")]
 fn widget_rows(app: &FigApp, q: &str) -> Vec<ActionRow> {
     let ql = q.to_lowercase();
     app.session
@@ -416,6 +431,10 @@ pub(crate) fn recent_row(app: &FigApp, key: &str, q: &str) -> Option<ActionRow> 
         }
         return Some(command_row(id, label.into_owned()));
     }
+    // A build without `plugins` has no plugin or widget rows to bring back.
+    #[cfg(not(feature = "plugins"))]
+    let _ = app;
+    #[cfg(feature = "plugins")]
     if let Some(rest) = key.strip_prefix("plugin:") {
         let (pid, cid) = rest.split_once('/')?;
         let p = app.session.prefs.plugins.iter().find(|p| p.manifest.id == pid)?;
@@ -426,6 +445,7 @@ pub(crate) fn recent_row(app: &FigApp, key: &str, q: &str) -> Option<ActionRow> 
         }
         return Some(ActionRow { key: key.to_string(), label, hint: tr("Plugin").to_string(), tile: p.manifest.name.chars().next() });
     }
+    #[cfg(feature = "plugins")]
     if let Some(pid) = key.strip_prefix("widget:") {
         let p = app.session.prefs.plugins.iter().find(|p| p.manifest.id == pid && p.manifest.widget)?;
         if !matches(&ql, &p.manifest.name, pid) {

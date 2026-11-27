@@ -57,7 +57,7 @@ fn main() {
         }
         res.set("ProductName", if nightly { "FigCraft Nightly" } else { "FigCraft" })
             .set("FileDescription", if nightly { "FigCraft Nightly interface design and prototyping" } else { "FigCraft" })
-            .set("CompanyName", "ArtCraft")
+            .set("CompanyName", "Learning Machines LLC")
             .set("OriginalFilename", "figcraft.exe")
             .set("InternalName", "figcraft");
         if nightly {

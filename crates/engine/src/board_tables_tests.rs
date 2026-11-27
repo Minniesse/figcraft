@@ -5,6 +5,7 @@ use figcraft_doc::{BoardItem, NodeId, NodeKind};
 use serde_json::{Value, json};
 
 use crate::board_tests::{board, id, node};
+#[cfg(feature = "collab")]
 use crate::collab_live_tests::Room;
 use crate::tools::{PointerEvent, PointerKind};
 use crate::{EngineError, Session};
@@ -213,6 +214,7 @@ several lines",
     assert_eq!(s.selection(), [t]);
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn tables_and_templates_sync_in_live_sessions() {
     let s = board();
@@ -401,6 +403,7 @@ fn a_resized_table_still_grows_with_its_text_and_undoes_in_one_step() {
     assert!(all_near(&row_heights(&s, t), &[41.0, 41.0, 40.0]), "{:?}", row_heights(&s, t));
 }
 
+#[cfg(feature = "collab")]
 #[test]
 fn table_resizes_sync_in_live_sessions() {
     let s = board();
